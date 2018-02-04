@@ -1470,7 +1470,7 @@ _0803041C:
 	adds r0, r7, r6
 	lsls r0, 3
 	adds r0, r1
-	ldr r1, =CB2_InitSpeedchoice
+	ldr r1, =Task_InitSpeedchoiceMenu
 	str r1, [r0]
 	b _08030514
 	.pool

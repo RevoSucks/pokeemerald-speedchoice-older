@@ -13,12 +13,21 @@
 #include "bg.h"
 #include "scanline_effect.h"
 #include "text_window.h"
+#include "field_message_box.h"
 
 extern u16 sUnknown_0855C604[16];
 extern u16 sUnknown_0855C6A0[1];
 
 extern const struct WindowTemplate sOptionMenuWinTemplates[3];
 extern const struct BgTemplate sOptionMenuBgTemplates[2];
+
+const struct WindowTemplate sSpeedchoiceMenuWinTemplates[] =
+{
+    {1, 2, 1, 0x1A, 2, 1, 2},
+    {0, 2, 5, 0x1A, 14, 1, 0x36},
+    {2, 2, 5, 0x1A, 4, 1, 0x016D},
+    DUMMY_WIN_TEMPLATE
+};
 
 // Window Ids
 enum
@@ -27,54 +36,54 @@ enum
     WIN_OPTIONS
 };
 
-const u8 gSystemText_TerminatorS[] = _("{PALETTE 8}$");
+const u8 gSystemText_TerminatorS[] = _("{COLOR RED}$");
 
 // HEADER
-const u8 gSpeedchoiceTextHeader[] = _("{PALETTE 9}SPEEDCHOICE MENU");
-const u8 gSpeedchoiceCurrentVersion[] = _("{PALETTE 9}v1.00");
+const u8 gSpeedchoiceTextHeader[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SPEEDCHOICE MENU");
+const u8 gSpeedchoiceCurrentVersion[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}v1.00");
 
 // OPTION CHOICES
-const u8 gSpeedchoiceTextYes[] = _("{PALETTE 15}YES");
-const u8 gSpeedchoiceTextNo[] = _("{PALETTE 15}NO");
-const u8 gSpeedchoiceTextOn[] = _("{PALETTE 15}ON");
-const u8 gSpeedchoiceTextOff[] = _("{PALETTE 15}OFF");
-const u8 gSpeedchoiceTextNerf[] = _("{PALETTE 15}PURGE");
-const u8 gSpeedchoiceTextKeep[] = _("{PALETTE 15}KEEP");
-const u8 gSpeedchoiceTextHell[] = _("{PALETTE 15}HELL");
-const u8 gSpeedchoiceTextSemi[] = _("{PALETTE 15}SEMI");
-const u8 gSpeedchoiceTextFull[] = _("{PALETTE 15}FULL");
-const u8 gSpeedchoiceTextStatic[] = _("{PALETTE 15}SAME");
-const u8 gSpeedchoiceTextRand[] = _("{PALETTE 15}RAND");
-const u8 gSpeedchoiceTextSane[] = _("{PALETTE 15}SANE");
+const u8 gSpeedchoiceTextYes[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}YES");
+const u8 gSpeedchoiceTextNo[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}NO");
+const u8 gSpeedchoiceTextOn[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}ON");
+const u8 gSpeedchoiceTextOff[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}OFF");
+const u8 gSpeedchoiceTextNerf[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}PURGE");
+const u8 gSpeedchoiceTextKeep[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}KEEP");
+const u8 gSpeedchoiceTextHell[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}HELL");
+const u8 gSpeedchoiceTextSemi[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SEMI");
+const u8 gSpeedchoiceTextFull[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}FULL");
+const u8 gSpeedchoiceTextStatic[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SAME");
+const u8 gSpeedchoiceTextRand[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}RAND");
+const u8 gSpeedchoiceTextSane[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SANE");
 
 // PAGE 1
-const u8 gSpeedchoiceOptionBWExp[] = _("{PALETTE 8}B/W EXP");
-const u8 gSpeedchoiceOptionPlotless[] = _("{PALETTE 8}PLOTLESS");
-const u8 gSpeedchoiceOptionInstantText[] = _("{PALETTE 8}INSTANT TEXT");
-const u8 gSpeedchoiceOptionSpinners[] = _("{PALETTE 8}SPINNERS");
-const u8 gSpeedchoiceOptionMaxVision[] = _("{PALETTE 8}MAX VISION");
+const u8 gSpeedchoiceOptionBWExp[] = _("{COLOR RED}{SHADOW LIGHT_RED}B/W EXP");
+const u8 gSpeedchoiceOptionPlotless[] = _("{COLOR RED}{SHADOW LIGHT_RED}PLOTLESS");
+const u8 gSpeedchoiceOptionInstantText[] = _("{COLOR RED}{SHADOW LIGHT_RED}INSTANT TEXT");
+const u8 gSpeedchoiceOptionSpinners[] = _("{COLOR RED}{SHADOW LIGHT_RED}SPINNERS");
+const u8 gSpeedchoiceOptionMaxVision[] = _("{COLOR RED}{SHADOW LIGHT_RED}MAX VISION");
 
 // PAGE 2
-const u8 gSpeedchoiceOptionNerfRoxanne[] = _("{PALETTE 8}NERF ROXANNE");
-const u8 gSpeedchoiceOptionSuperBike[] = _("{PALETTE 8}SUPER BIKE");
-const u8 gSpeedchoiceOptionNewWildEnc[] = _("{PALETTE 8}NEW WILD ENC.");
-const u8 gSpeedchoiceOptionEarlyFly[] = _("{PALETTE 8}EARLY FLY");
-const u8 gSpeedchoiceOptionRunEverywhere[] = _("{PALETTE 8}RUN EVERYWHERE");
+const u8 gSpeedchoiceOptionNerfRoxanne[] = _("{COLOR RED}{SHADOW LIGHT_RED}NERF ROXANNE");
+const u8 gSpeedchoiceOptionSuperBike[] = _("{COLOR RED}{SHADOW LIGHT_RED}SUPER BIKE");
+const u8 gSpeedchoiceOptionNewWildEnc[] = _("{COLOR RED}{SHADOW LIGHT_RED}NEW WILD ENC.");
+const u8 gSpeedchoiceOptionEarlyFly[] = _("{COLOR RED}{SHADOW LIGHT_RED}EARLY FLY");
+const u8 gSpeedchoiceOptionRunEverywhere[] = _("{COLOR RED}{SHADOW LIGHT_RED}RUN EVERYWHERE");
 
 // PAGE 3
-const u8 gSpeedchoiceOptionMemeIsland[] = _("{PALETTE 8}MEME ISLAND");
-const u8 gSpeedchoiceOptionEasyFrontier[] = _("{PALETTE 8}EASY FRONTIER");
-const u8 gSpeedchoiceOptionBetterMarts[] = _("{PALETTE 8}BETTER MARTS");
-const u8 gSpeedchoiceOptionGoodEarlyWilds[] = _("{PALETTE 8}GOOD EARLY WILDS");
-const u8 gSpeedchoiceOptionEarlySurf[] = _("{PALETTE 8}EARLY SURF");
+const u8 gSpeedchoiceOptionMemeIsland[] = _("{COLOR RED}{SHADOW LIGHT_RED}MEME ISLAND");
+const u8 gSpeedchoiceOptionEasyFrontier[] = _("{COLOR RED}E{SHADOW LIGHT_RED}ASY FRONTIER");
+const u8 gSpeedchoiceOptionBetterMarts[] = _("{COLOR RED}{SHADOW LIGHT_RED}BETTER MARTS");
+const u8 gSpeedchoiceOptionGoodEarlyWilds[] = _("{COLOR RED}{SHADOW LIGHT_RED}GOOD EARLY WILDS");
+const u8 gSpeedchoiceOptionEarlySurf[] = _("{COLOR RED}{SHADOW LIGHT_RED}EARLY SURF");
 
 // CONSTANT OPTIONS
-const u8 gSpeedchoiceOptionPage[] = _("{PALETTE 15}PAGE");
-const u8 gSpeedchoiceOptionStartGame[] = _("{PALETTE 15}START GAME");
+const u8 gSpeedchoiceOptionPage[] = _("PAGE");
+const u8 gSpeedchoiceOptionStartGame[] = _("START GAME");
 
 // ARROWS
-const u8 gSpeedchoiceOptionLeftArrow[] = _("{PALETTE 15}{LEFT_ARROW}");
-const u8 gSpeedchoiceOptionRightArrow[] = _("{PALETTE 15}{RIGHT_ARROW}");
+const u8 gSpeedchoiceOptionLeftArrow[] = _("{COLOR RED}{SHADOW LIGHT_RED}{LEFT_ARROW}");
+const u8 gSpeedchoiceOptionRightArrow[] = _("{COLOR RED}{SHADOW LIGHT_RED}{RIGHT_ARROW}");
 
 // TOOLTIPS
 const u8 gSpeedchoiceTooltipBWEXP[] = _("Replaces the current experience\nsystem in favor of\pBlack/White’s implementation.");
@@ -102,8 +111,8 @@ const u8 gSpeedchoiceEscapeText[] = _("ESCAPE");
 
 const struct OptionChoiceConfig OptionChoiceConfigYesNo[MAX_CHOICES] = 
 {
-    { 184, (u8 *)&gSpeedchoiceTextYes },
-    { 155, (u8 *)&gSpeedchoiceTextNo },
+    { 120, (u8 *)&gSpeedchoiceTextYes },
+    { 150, (u8 *)&gSpeedchoiceTextNo },
     { -1, NULL },
     { -1, NULL },
     { -1, NULL },
@@ -112,8 +121,8 @@ const struct OptionChoiceConfig OptionChoiceConfigYesNo[MAX_CHOICES] =
 
 const struct OptionChoiceConfig OptionChoiceConfigOnOff[MAX_CHOICES] = 
 {
-    { 184, (u8 *)&gSpeedchoiceTextOn },
-    { 155, (u8 *)&gSpeedchoiceTextOff },
+    { 120, (u8 *)&gSpeedchoiceTextOn },
+    { 150, (u8 *)&gSpeedchoiceTextOff },
     { -1, NULL },
     { -1, NULL },
     { -1, NULL },
@@ -122,9 +131,9 @@ const struct OptionChoiceConfig OptionChoiceConfigOnOff[MAX_CHOICES] =
 
 const struct OptionChoiceConfig OptionChoiceConfigNerfKeep[MAX_CHOICES] = 
 {
-    { 118, (u8 *)&gSpeedchoiceTextNerf },
-    { 154, (u8 *)&gSpeedchoiceTextKeep },
-    { 184, (u8 *)&gSpeedchoiceTextHell },
+    { 120, (u8 *)&gSpeedchoiceTextNerf },
+    { 150, (u8 *)&gSpeedchoiceTextKeep },
+    { 180, (u8 *)&gSpeedchoiceTextHell },
     { -1, NULL },
     { -1, NULL },
     { -1, NULL }
@@ -132,9 +141,9 @@ const struct OptionChoiceConfig OptionChoiceConfigNerfKeep[MAX_CHOICES] =
 
 const struct OptionChoiceConfig OptionChoiceConfigSemiFull[MAX_CHOICES] = 
 {
-    { 124, (u8 *)&gSpeedchoiceTextSemi },
-    { 154, (u8 *)&gSpeedchoiceTextKeep },
-    { 184, (u8 *)&gSpeedchoiceTextFull },
+    { 120, (u8 *)&gSpeedchoiceTextSemi },
+    { 150, (u8 *)&gSpeedchoiceTextKeep },
+    { 180, (u8 *)&gSpeedchoiceTextFull },
     { -1, NULL },
     { -1, NULL },
     { -1, NULL }
@@ -142,9 +151,9 @@ const struct OptionChoiceConfig OptionChoiceConfigSemiFull[MAX_CHOICES] =
 
 const struct OptionChoiceConfig OptionChoiceConfigOffRand[MAX_CHOICES] = 
 {
-    { 129, (u8 *)&gSpeedchoiceTextOff },
-    { 154, (u8 *)&gSpeedchoiceTextStatic },
-    { 184, (u8 *)&gSpeedchoiceTextRand },
+    { 120, (u8 *)&gSpeedchoiceTextOff },
+    { 150, (u8 *)&gSpeedchoiceTextStatic },
+    { 180, (u8 *)&gSpeedchoiceTextRand },
     { -1, NULL },
     { -1, NULL },
     { -1, NULL }
@@ -152,9 +161,9 @@ const struct OptionChoiceConfig OptionChoiceConfigOffRand[MAX_CHOICES] =
 
 const struct OptionChoiceConfig OptionChoiceConfigSaneHell[MAX_CHOICES] = 
 {
-    { 129, (u8 *)&gSpeedchoiceTextOff },
-    { 154, (u8 *)&gSpeedchoiceTextSane },
-    { 184, (u8 *)&gSpeedchoiceTextHell },
+    { 120, (u8 *)&gSpeedchoiceTextOff },
+    { 150, (u8 *)&gSpeedchoiceTextSane },
+    { 180, (u8 *)&gSpeedchoiceTextHell },
     { -1, NULL },
     { -1, NULL },
     { -1, NULL }
@@ -174,8 +183,8 @@ const struct OptionChoiceConfig OptionChoiceConfigPage[MAX_CHOICES] =
 // not a normal config struct, but used for the arrows for multi choice.
 const struct OptionChoiceConfig Arrows[MAX_CHOICES] = 
 {
-    { 135, (u8 *)&gSpeedchoiceOptionLeftArrow },
-    { 190, (u8 *)&gSpeedchoiceOptionRightArrow },
+    { 120, (u8 *)&gSpeedchoiceOptionLeftArrow },
+    { 150, (u8 *)&gSpeedchoiceOptionRightArrow },
     { -1, NULL },
     { -1, NULL },
     { -1, NULL },
@@ -211,7 +220,7 @@ EWRAM_DATA struct MapObjectTimerBackup gMapObjectTimerBackup[MAX_SPRITES] = {0};
 EWRAM_DATA bool8 gLastMenuWasSubmenu = {0};
 EWRAM_DATA bool8 gPokedexAreaScreenFlag = {0};
 
-static void RedrawSpeedchoiceHeader(void);
+static void DrawHeaderWindow(void);
 static void sub_80BB154(void);
 static void Task_SpeedchoiceMenuFadeIn(u8 taskId);
 
@@ -295,7 +304,7 @@ static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style)
     }
 
     dst[i] = EOS;
-    PrintTextOnWindow(WIN_OPTIONS, 1, dst, x, y + 1, TEXT_SPEED_FF, NULL);
+    PrintTextOnWindow(WIN_OPTIONS, 1, dst, x, y, TEXT_SPEED_FF, NULL);
 }
 
 static u8 ProcessGeneralInput(struct SpeedchoiceOption *option, u8 selection, bool8 indexedToOne) // if indexedToOne is true (1), i can conveniently use it as the selection anchor.
@@ -387,8 +396,8 @@ static void VBlankCB(void)
 
 void HighlightHeaderBox(void)
 {
-    REG_WIN0H = WIN_RANGE(17, 223);
-    REG_WIN0V = WIN_RANGE(1, 31);
+    SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(17, 223));
+    SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE(1, 31));
 }
 
 //This version uses addition '+' instead of OR '|'.
@@ -396,8 +405,18 @@ void HighlightHeaderBox(void)
 
 static void HighlightOptionMenuItem(u8 index)
 {
-    REG_WIN1H = WIN_RANGE(24, 215);
-    REG_WIN1V = WIN_RANGE_(index * 16 + 40, index * 16 + 56);
+    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(16, 224));
+    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE_(index * 16 + 40, index * 16 + 56));
+}
+
+void CB2_InitSpeedchoice(void);
+void DrawPageOptions(u8, u8);
+
+// HACK!!!
+void Task_InitSpeedchoiceMenu(u8 taskId)
+{
+    SetMainCallback2(CB2_InitSpeedchoice);
+    DestroyTask(taskId);
 }
 
 void CB2_InitSpeedchoice(void)
@@ -440,7 +459,7 @@ void CB2_InitSpeedchoice(void)
         ChangeBgY(2, 0, 0);
         ChangeBgX(3, 0, 0);
         ChangeBgY(3, 0, 0);
-        InitWindows(sOptionMenuWinTemplates);
+        InitWindows(sSpeedchoiceMenuWinTemplates);
         DeactivateAllTextPrinters();
         SetGpuReg(REG_OFFSET_WIN0H, 0);
         SetGpuReg(REG_OFFSET_WIN0V, 0);
@@ -477,7 +496,7 @@ void CB2_InitSpeedchoice(void)
         break;
     case 6:
         PutWindowTilemap(0);
-        RedrawSpeedchoiceHeader();
+        DrawHeaderWindow();
         gMain.state++;
         break;
     case 7:
@@ -502,7 +521,8 @@ void CB2_InitSpeedchoice(void)
         gLocalSpeedchoiceConfig.pageNum = 1;
 
         InitializeOptionChoicesAndConfig(taskId);
-        
+
+        DrawHeaderWindow();
         DrawPageOptions(taskId, gLocalSpeedchoiceConfig.pageNum);
 
         /*TextSpeed_DrawChoices(gTasks[taskId].data[TD_TEXTSPEED]);
@@ -513,7 +533,6 @@ void CB2_InitSpeedchoice(void)
         FrameType_DrawChoices(gTasks[taskId].data[TD_FRAMETYPE]);
         HighlightOptionMenuItem(gTasks[taskId].data[TD_MENUSELECTION]);*/
 
-        CopyWindowToVram(WIN_OPTIONS, 3);
         HighlightHeaderBox();
         HighlightOptionMenuItem(gLocalSpeedchoiceConfig.pageIndex);
         PlayBGM(MUS_CONLOBBY);
@@ -530,6 +549,8 @@ void CB2_InitSpeedchoice(void)
 
 #define CHAR_0 0xA1
 #define CHAR_PERCENT 0x5B
+
+#define NEWMENUOPTIONCOORDS(i)  ((i * 15) + 2)
 
 static u8 *FormatPercentNumber(char *text, u8 selection, u8 x, u8 y, u8 style) // style is unused
 {
@@ -553,9 +574,9 @@ static void DrawGeneralChoices(struct SpeedchoiceOption *option, u8 selection, u
     if(numChoices < MAX_CHOICES)
     {
         for(i = 0; i < numChoices; i++)
-            styles[i] = 0xF;
+            styles[i] = 0;
 
-        styles[selection] = 0x8;
+        styles[selection] = 1;
     }
 
     if(option->optionType == ARROW_SELECTABLE)
@@ -563,7 +584,7 @@ static void DrawGeneralChoices(struct SpeedchoiceOption *option, u8 selection, u
         u8 text[8];
         s16 x_left = Arrows[0].x;
         s16 x_right = Arrows[1].x;
-        s16 y = 40 + (row * 16);
+        s16 y = NEWMENUOPTIONCOORDS(row);
 
         DrawOptionMenuChoice(Arrows[0].string, x_left, y, 0xF); // left arrow
         DrawOptionMenuChoice(Arrows[1].string, x_right, y, 0xF); // right arrow
@@ -577,7 +598,7 @@ static void DrawGeneralChoices(struct SpeedchoiceOption *option, u8 selection, u
         for(i = 0; i < numChoices; i++)
         {
             s16 x = option->options[i].x;
-            s16 y = 40 + (row * 16);
+            s16 y = NEWMENUOPTIONCOORDS(row);
             u8 *string = option->options[i].string;
 
             DrawOptionMenuChoice(string, x, y, styles[i]);
@@ -596,18 +617,50 @@ static void Task_SpeedchoiceMenuFadeIn(u8 taskId)
     }
 }
 
-static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
+static void Task_WaitForTooltip(u8 taskId)
+{
+    RunTextPrinters();
+
+    if(!IsTextPrinterActive(2))
+    {
+        if(gMain.newKeys & A_BUTTON)
+        {
+            ClearWindowTilemap(2);
+            gTasks[taskId].func = Task_SpeedchoiceMenuProcessInput;
+        }
+    }
+}
+
+static void DrawTooltip(u8 taskId, struct SpeedchoiceOption *option)
+{
+    FillWindowPixelBuffer(2, 0x11);
+    PrintTextOnWindow(2, 1, option->tooltip, 0, 1, GetPlayerTextSpeed(), NULL);
+    CopyWindowToVram(2, 2);
+    SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(1, 241));
+    SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE_(114, 160));
+    gTasks[taskId].func = Task_WaitForTooltip;
+}
+
+static void Task_SpeedchoiceMenuSave(u8 taskId)
 {
     // TODO
 }
 
-/*
-static void Task_OptionMenuFadeIn(u8 taskId)
+static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
 {
-    if (!gPaletteFade.active)
-        gTasks[taskId].func = Task_OptionMenuProcessInput;
+    if (gMain.newKeys & A_BUTTON)
+    {
+        if (gLocalSpeedchoiceConfig.trueIndex == START_GAME)
+            gTasks[taskId].func = Task_SpeedchoiceMenuSave;
+    }
+    else if (gMain.newKeys & SELECT_BUTTON) // do tooltip.
+    {
+        if(gLocalSpeedchoiceConfig.trueIndex <= CURRENT_OPTIONS_NUM && SpeedchoiceOptions[gLocalSpeedchoiceConfig.trueIndex].tooltip != NULL)
+            DrawTooltip(taskId, (struct SpeedchoiceOption *)&SpeedchoiceOptions[gLocalSpeedchoiceConfig.trueIndex]);
+    }
 }
 
+/*
 static void Task_OptionMenuProcessInput(u8 taskId)
 {
     if (gMain.newKeys & A_BUTTON)
@@ -962,17 +1015,18 @@ static void ButtonMode_DrawChoices(u8 selection)
     DrawOptionMenuChoice(gText_ButtonTypeLEqualsA, GetStringRightAlignXOffset(1, gText_ButtonTypeLEqualsA, 198), 64, styles[2]);
 }*/
 
-void RedrawSpeedchoiceHeader(void)
+void DrawHeaderWindow(void)
 {
     FillWindowPixelBuffer(WIN_TEXT_OPTION, 0x11);
     PrintTextOnWindow(WIN_TEXT_OPTION, 1, gSpeedchoiceTextHeader, 4, 1, TEXT_SPEED_FF, NULL);
-    PrintTextOnWindow(WIN_TEXT_OPTION, 1, gSpeedchoiceCurrentVersion, 23, 1, TEXT_SPEED_FF, NULL);
+    PrintTextOnWindow(WIN_TEXT_OPTION, 1, gSpeedchoiceCurrentVersion, 175, 1, TEXT_SPEED_FF, NULL);
     CopyWindowToVram(WIN_TEXT_OPTION, 3);
 }
 
-void DrawOptionsWindow(void)
+void DrawOptionsAndChoicesWindow(void)
 {
     FillWindowPixelBuffer(WIN_OPTIONS, 0x11);
+    CopyWindowToVram(WIN_OPTIONS, 3);
 }
 
 u8 GetPageDrawCount(u8 page)
@@ -996,13 +1050,13 @@ void DrawPageOptions(u8 taskId, u8 page)
         struct SpeedchoiceOption *option = (struct SpeedchoiceOption *)&SpeedchoiceOptions[i + (OPTIONS_PER_PAGE * (page - 1))];
         u8 *string = option->string;
 
-        PrintTextOnWindow(WIN_OPTIONS, 1, string, 4, MENUOPTIONCOORDS(i), TEXT_SPEED_FF, NULL);
+        PrintTextOnWindow(WIN_OPTIONS, 1, string, 4, NEWMENUOPTIONCOORDS(i), TEXT_SPEED_FF, NULL);
         // TODO: Draw on WIN_OPTIONS, if it's broken
         DrawGeneralChoices(option, gLocalSpeedchoiceConfig.optionConfig[i + ((page-1) * 5)], i, FALSE);
     }
 
-    PrintTextOnWindow(WIN_OPTIONS, 1, gSpeedchoiceOptionPage, 4, MENUOPTIONCOORDS(5), TEXT_SPEED_FF, NULL);
-    PrintTextOnWindow(WIN_OPTIONS, 1, gSpeedchoiceOptionStartGame, 4, MENUOPTIONCOORDS(5), TEXT_SPEED_FF, NULL);
+    PrintTextOnWindow(WIN_OPTIONS, 1, gSpeedchoiceOptionPage, 4, NEWMENUOPTIONCOORDS(5), TEXT_SPEED_FF, NULL);
+    PrintTextOnWindow(WIN_OPTIONS, 1, gSpeedchoiceOptionStartGame, 4, NEWMENUOPTIONCOORDS(6), TEXT_SPEED_FF, NULL);
     CopyWindowToVram(WIN_OPTIONS, 3);
 }
 
