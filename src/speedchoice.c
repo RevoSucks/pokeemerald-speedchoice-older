@@ -18,14 +18,43 @@
 extern u16 sUnknown_0855C604[16];
 extern u16 sUnknown_0855C6A0[1];
 
-extern const struct WindowTemplate sOptionMenuWinTemplates[3];
-extern const struct BgTemplate sOptionMenuBgTemplates[2];
+const struct BgTemplate sSpeedchoiceMenuBgTemplates[] =
+{
+   {
+       .bg = 1,
+       .charBaseIndex = 1,
+       .mapBaseIndex = 30,
+       .screenSize = 0,
+       .paletteMode = 0,
+       .priority = 0,
+       .baseTile = 0
+   },
+   {
+       .bg = 0,
+       .charBaseIndex = 1,
+       .mapBaseIndex = 31,
+       .screenSize = 0,
+       .paletteMode = 0,
+       .priority = 1,
+       .baseTile = 0
+   },
+   // 0x000001ec
+   {
+       .bg = 2,
+       .charBaseIndex = 2,
+       .mapBaseIndex = 29,
+       .screenSize = 0,
+       .paletteMode = 0,
+       .priority = 2,
+       .baseTile = 0
+   }
+};
 
 const struct WindowTemplate sSpeedchoiceMenuWinTemplates[] =
 {
     {1, 2, 1, 0x1A, 2, 1, 2},
     {0, 2, 5, 0x1A, 14, 1, 0x36},
-    {2, 2, 5, 0x1A, 4, 1, 0x016D},
+    {2, 2, 5, 0x1A, 4, 1, 1},
     DUMMY_WIN_TEMPLATE
 };
 
@@ -450,7 +479,7 @@ void CB2_InitSpeedchoice(void)
         DmaClear16(3, PLTT, PLTT_SIZE);
         SetGpuReg(REG_OFFSET_DISPCNT, 0);
         ResetBgsAndClearDma3BusyFlags(0);
-        InitBgsFromTemplates(0, sOptionMenuBgTemplates, ARRAY_COUNT(sOptionMenuBgTemplates));
+        InitBgsFromTemplates(0, sSpeedchoiceMenuBgTemplates, ARRAY_COUNT(sSpeedchoiceMenuBgTemplates));
         ChangeBgX(0, 0, 0);
         ChangeBgY(0, 0, 0);
         ChangeBgX(1, 0, 0);
@@ -471,6 +500,7 @@ void CB2_InitSpeedchoice(void)
         SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         ShowBg(0);
         ShowBg(1);
+		ShowBg(2);
         gMain.state++;
     }
         break;
