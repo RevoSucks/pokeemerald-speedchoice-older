@@ -21,6 +21,9 @@
 #define ROCKSMASH_QUEUE_SIZE 15
 #define FISHING_QUEUE_SIZE 5
 
+#define oldmin(a, b) (a < b ? a : b)
+#define oldmax(a, b) (a > b ? a : b)
+
 // options
 enum
 {
