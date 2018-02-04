@@ -11,3 +11,5 @@ const u8 gText_MysteryGiftFullParty[] = _("Your party is full.\n{STR_VAR_1} coul
 const u8 gText_MysteryGiftNewTrainer[] = _("A new TRAINER has arrived in\nHOENN.");
 const u8 gText_MysteryGiftNewAdversaryInBattleTower[] = _("A new adversary has arrived in the\nBATTLE TOWER.");
 const u8 gText_MysteryGiftCantBeUsed[] = _("This data can’t be used in\nthis version.");
+
+const u32 gRandomizerCheckValue = 0;

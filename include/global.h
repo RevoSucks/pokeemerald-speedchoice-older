@@ -223,6 +223,25 @@ struct UnknownSaveBlock2Struct
     u8 field_EB;
 }; // sizeof = 0xEC
 
+struct SpeedchoiceSaveOptions
+{
+    u8 bwexp:1;
+    u8 plotless:2;
+    u8 instantText:1;
+    u8 spinners:2;
+    u8 maxVision:2;
+    u8 nerfRoxanne:1;
+    u8 superbike:1;
+    u8 newwildencounters:1;
+    u8 earlyfly:1;
+    u8 runEverywhere:1;
+    u8 memeIsland:1;
+    u8 easyfrontier:1;
+    u8 betterMarts:1;
+    u8 goodEarlyWilds:2;
+    u8 earlysurf:1;
+};
+
 struct SaveBlock2
 {
     /*0x00*/ u8 playerName[PLAYER_NAME_LENGTH];
@@ -291,6 +310,9 @@ struct SaveBlock2
     /*0xEE9*/ u8 field_EE9;
     /*0xEEA*/ u8 field_EEA[66];
     // sizeof=0xF2C
+
+    /*SPEEDCHOICE*/
+    struct SpeedchoiceSaveOptions speedchoiceConfig;
 };
 
 extern struct SaveBlock2 *gSaveBlock2Ptr;
