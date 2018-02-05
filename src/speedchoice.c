@@ -15,6 +15,7 @@
 #include "text_window.h"
 #include "field_message_box.h"
 #include "text_window.h"
+#include "new_menu_helpers.h"
 
 extern u16 sUnknown_0855C604[16];
 extern u16 sUnknown_0855C6A0[1];
@@ -25,7 +26,8 @@ enum
 {
     SPD_WIN_TEXT_OPTION,
     SPD_WIN_OPTIONS,
-	SPD_WIN_TOOLTIP,
+    SPD_WIN_TOOLTIP,
+    SPD_WIN_YESNO,
 };
 
 const struct BgTemplate sSpeedchoiceMenuBgTemplates[] =
@@ -65,7 +67,7 @@ const struct WindowTemplate sSpeedchoiceMenuWinTemplates[] =
     {1, 2, 1, 0x1A, 2, 1, 2},
     {0, 2, 5, 0x1A, 14, 1, 0x36},
     {2, 2, 15, 0x1A, 4, 15, 427},
-	{2, 23, 9, 4, 4, 15, 531}, // YES/NO
+    {2, 23, 9, 4, 4, 15, 531}, // YES/NO
     DUMMY_WIN_TEMPLATE
 };
 
@@ -254,6 +256,13 @@ const struct SpeedchoiceOption SpeedchoiceOptions[CURRENT_OPTIONS_NUM + 1] = // 
 // we need to extern the randomizer check value. If the ROM could see the value assigned (which is 0 by default), then it would be optimized out, but we need this location to be externally written to by the randomizer.
 extern u32 gRandomizerCheckValue;
 
+extern void sub_8032250(struct WindowTemplate *window);
+extern void DrawMainMenuWindowBorder(struct WindowTemplate *template, u16 baseTileNum);
+extern void task_new_game_prof_birch_speech_1(u8);
+extern u16 gUnknown_02022D06;
+extern const struct BgTemplate gUnknown_082FF0E8[];
+extern const struct WindowTemplate gUnknown_085B1DDC;
+
 EWRAM_DATA u8 gStoredPageNum = 0; // default is 0, only renders options again if it's different than the task data's page number.
 EWRAM_DATA struct SpeedchoiceConfigStruct gLocalSpeedchoiceConfig = {0};
 EWRAM_DATA struct MapObjectTimerBackup gMapObjectTimerBackup[MAX_SPRITES] = {0};
@@ -263,6 +272,8 @@ EWRAM_DATA bool8 gPokedexAreaScreenFlag = {0};
 static void DrawHeaderWindow(void);
 static void sub_80BB154(void);
 static void Task_SpeedchoiceMenuFadeIn(u8 taskId);
+u8 GetPageDrawCount(u8 page);
+void SetPageIndexFromTrueIndex(u8 taskId, s16 index);
 
 void InitializeOptionChoicesAndConfig(u8 taskId)
 {
@@ -511,7 +522,7 @@ void CB2_InitSpeedchoice(void)
         SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_WIN0_ON | DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         ShowBg(0);
         ShowBg(1);
-		ShowBg(2);
+        ShowBg(2);
         gMain.state++;
     }
         break;
@@ -533,7 +544,7 @@ void CB2_InitSpeedchoice(void)
         break;
     case 5:
         LoadPalette(sUnknown_0855C604, 0x10, sizeof(sUnknown_0855C604));
-		LoadPalette(gMainMenuTextPal, 0xF0, sizeof(gMainMenuTextPal));
+        LoadPalette(gMainMenuTextPal, 0xF0, sizeof(gMainMenuTextPal));
         gMain.state++;
         break;
     case 6:
@@ -608,14 +619,14 @@ static u8 *FormatPercentNumber(char *text, u8 selection, u8 x, u8 y, u8 style) /
 
 static void DrawPageChoice(u8 selection)
 {
-	u8 text[5];
+    u8 text[5];
 
-	memcpy(text, gSystemText_TerminatorS, 3);
+    memcpy(text, gSystemText_TerminatorS, 3);
 
-	text[3] = selection + CHAR_0;
-	text[4] = EOS;
+    text[3] = selection + CHAR_0;
+    text[4] = EOS;
 
-	PrintTextOnWindow(SPD_WIN_OPTIONS, 1, text, 40, NEWMENUOPTIONCOORDS(5), TEXT_SPEED_FF, NULL);
+    PrintTextOnWindow(SPD_WIN_OPTIONS, 1, text, 40, NEWMENUOPTIONCOORDS(5), TEXT_SPEED_FF, NULL);
 }
 
 // used for all but page.
@@ -686,8 +697,6 @@ u8 GetPageOptionPageIndex(bool8 lastOrFirst, u8 page)
     return (lastOrFirst) ? GetPageDrawCount(page) : 1;
 }
 
-extern void sub_8032250(struct WindowTemplate *window);
-
 static void Task_WaitForTooltip(u8 taskId)
 {
     RunTextPrinters();
@@ -697,34 +706,32 @@ static void Task_WaitForTooltip(u8 taskId)
         if(gMain.newKeys & A_BUTTON)
         {
             ClearWindowTilemap(SPD_WIN_TOOLTIP);
-			sub_8032250(&sSpeedchoiceMenuWinTemplates[2]);
-			DrawPageOptions(taskId, gLocalSpeedchoiceConfig.pageNum);
+            sub_8032250((struct WindowTemplate *)&sSpeedchoiceMenuWinTemplates[SPD_WIN_TOOLTIP]);
+            DrawPageOptions(taskId, gLocalSpeedchoiceConfig.pageNum);
             gTasks[taskId].func = Task_SpeedchoiceMenuProcessInput;
         }
     }
 }
 
-extern void DrawMainMenuWindowBorder(struct WindowTemplate *template, u16 baseTileNum);
-
 static void DrawTooltip(u8 taskId, const u8 *str, int speed, bool32 isYesNo)
 {
     FillWindowPixelBuffer(SPD_WIN_TOOLTIP, 0x11);
     PrintTextOnWindow(SPD_WIN_TOOLTIP, 1, str, 0, 1, speed, NULL);
-	//sub_8098858(SPD_WIN_TOOLTIP, 0x1D5, 0);
-	DrawMainMenuWindowBorder(&sSpeedchoiceMenuWinTemplates[SPD_WIN_TOOLTIP], 418);
-	PutWindowTilemap(SPD_WIN_TOOLTIP);
+    //sub_8098858(SPD_WIN_TOOLTIP, 0x1D5, 0);
+    DrawMainMenuWindowBorder((struct WindowTemplate *)&sSpeedchoiceMenuWinTemplates[SPD_WIN_TOOLTIP], 418);
+    PutWindowTilemap(SPD_WIN_TOOLTIP);
     CopyWindowToVram(SPD_WIN_TOOLTIP, 3);
-	if(isYesNo)
-	{
-		FillWindowPixelBuffer(3, 0x11);
-		DrawMainMenuWindowBorder(&sSpeedchoiceMenuWinTemplates[3], 418);
-		PutWindowTilemap(3);
-		CopyWindowToVram(3, 3);
-	}
+    if(isYesNo)
+    {
+        FillWindowPixelBuffer(3, 0x11);
+        DrawMainMenuWindowBorder((struct WindowTemplate *)&sSpeedchoiceMenuWinTemplates[SPD_WIN_YESNO], 418);
+        PutWindowTilemap(3);
+        CopyWindowToVram(3, 3);
+    }
     SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(1, 241));
     SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE_(114, 160));
-	if(!isYesNo)
-		gTasks[taskId].func = Task_WaitForTooltip;
+    if(!isYesNo)
+        gTasks[taskId].func = Task_WaitForTooltip;
 }
 
 u32 CountLeadingZeros(u32 value)
@@ -793,8 +800,6 @@ static void SaveSpeedchoiceOptions(u8 taskId)
     gSaveBlock2Ptr->speedchoiceConfig.earlysurf = gLocalSpeedchoiceConfig.optionConfig[EARLYSURF];
 }
 
-extern void task_new_game_prof_birch_speech_1(u8);
-
 static void Task_SpeedchoiceMenuFadeOut(u8 taskId)
 {
     if(!gPaletteFade.active)
@@ -802,7 +807,7 @@ static void Task_SpeedchoiceMenuFadeOut(u8 taskId)
         u8 *addr;
         u32 size;
 
-		addr = (u8 *)VRAM;
+        addr = (u8 *)VRAM;
         size = 0x18000;
         while (1)
         {
@@ -817,9 +822,29 @@ static void Task_SpeedchoiceMenuFadeOut(u8 taskId)
         }
         DmaClear32(3, OAM, OAM_SIZE);
         DmaClear16(3, PLTT, PLTT_SIZE);
-		HideBg(0);
-		HideBg(1);
-		HideBg(2);
+        gPlttBufferUnfaded[0] = 0;
+        gPlttBufferFaded[0] = 0;
+        /*ClearWindowTilemap(SPD_WIN_TEXT_OPTION);
+        ClearWindowTilemap(SPD_WIN_OPTIONS);
+        ClearWindowTilemap(SPD_WIN_TOOLTIP);
+        ClearWindowTilemap(3);
+        sub_8032250(&sSpeedchoiceMenuWinTemplates[SPD_WIN_TEXT_OPTION]);
+        sub_8032250(&sSpeedchoiceMenuWinTemplates[SPD_WIN_OPTIONS]);
+        sub_8032250(&sSpeedchoiceMenuWinTemplates[SPD_WIN_TOOLTIP]);
+        sub_8032250(&sSpeedchoiceMenuWinTemplates[SPD_WIN_YESNO]);*/
+        FreeAllWindowBuffers();
+        SetGpuReg(REG_OFFSET_DISPCNT, 0);
+        SetGpuReg(REG_OFFSET_BG2CNT, 0);
+        SetGpuReg(REG_OFFSET_BG1CNT, 0);
+        SetGpuReg(REG_OFFSET_BG0CNT, 0);
+        SetGpuReg(REG_OFFSET_BG2HOFS, 0);
+        SetGpuReg(REG_OFFSET_BG2VOFS, 0);
+        SetGpuReg(REG_OFFSET_BG1HOFS, 0);
+        SetGpuReg(REG_OFFSET_BG1VOFS, 0);
+        SetGpuReg(REG_OFFSET_BG0HOFS, 0);
+        SetGpuReg(REG_OFFSET_BG0VOFS, 0);
+        ResetBgs();
+        InitBgsFromTemplates(0, gUnknown_082FF0E8, 2);
         gTasks[taskId].func = task_new_game_prof_birch_speech_1;
     }
 }
@@ -829,33 +854,31 @@ static void Task_AskToStartGame(u8 taskId)
     switch (ProcessMenuInputNoWrap_())
     {
     case 0:  // YES
-		PlayBGM(MUS_STOP);
+        PlayBGM(MUS_STOP);
         PlaySE(SE_SELECT);
-		SaveSpeedchoiceOptions(taskId);
-		BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
+        SaveSpeedchoiceOptions(taskId);
+        BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
         gTasks[taskId].func = Task_SpeedchoiceMenuFadeOut;
         break;
     case 1:  // NO
     case -1: // B button
         PlaySE(SE_SELECT);
-		ClearWindowTilemap(SPD_WIN_TOOLTIP);
-		ClearWindowTilemap(3);
-		sub_8032250(&sSpeedchoiceMenuWinTemplates[SPD_WIN_TOOLTIP]);
-		sub_8032250(&sSpeedchoiceMenuWinTemplates[3]);
+        ClearWindowTilemap(SPD_WIN_TOOLTIP);
+        ClearWindowTilemap(3);
+        sub_8032250((struct WindowTemplate *)&sSpeedchoiceMenuWinTemplates[SPD_WIN_TOOLTIP]);
+        sub_8032250((struct WindowTemplate *)&sSpeedchoiceMenuWinTemplates[SPD_WIN_YESNO]);
         DrawPageOptions(taskId, gLocalSpeedchoiceConfig.pageNum);
         gTasks[taskId].func = Task_SpeedchoiceMenuProcessInput;
         break;
     }
 }
 
-extern const struct WindowTemplate gUnknown_085B1DDC;
-
 static void Task_SpeedchoiceMenuSave(u8 taskId)
 {
     ConvertIntToHexStringN(gStringVar1, CalculateCheckValue(taskId), STR_CONV_MODE_LEADING_ZEROS, 8);
-	StringExpandPlaceholders(gStringVar4, gSpeedchoiceStartGameText);
-	DrawTooltip(taskId, gStringVar4, TEXT_SPEED_FF, TRUE); // a bit of a hack, but whatever.
-	CreateYesNoMenu(&sSpeedchoiceMenuWinTemplates[3], 418, 2, 0);
+    StringExpandPlaceholders(gStringVar4, gSpeedchoiceStartGameText);
+    DrawTooltip(taskId, gStringVar4, TEXT_SPEED_FF, TRUE); // a bit of a hack, but whatever.
+    CreateYesNoMenu(&sSpeedchoiceMenuWinTemplates[SPD_WIN_YESNO], 418, 2, 0);
 
     gTasks[taskId].func = Task_AskToStartGame;
 }
@@ -905,15 +928,15 @@ static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
             default:
                 if(trueIndex < CURRENT_OPTIONS_NUM)
                 {
-					// lol. I don't know why I hardcoded this in Sapphire.
+                    // lol. I don't know why I hardcoded this in Sapphire.
                     //if(trueIndex == NERFROXANNE)
                     //    gLocalSpeedchoiceConfig.optionConfig[trueIndex] = ProcessGeneralInput((struct SpeedchoiceOption *)&SpeedchoiceOptions[trueIndex], selection, TRUE);
                     //else
-					u8 oldSelection = gLocalSpeedchoiceConfig.optionConfig[trueIndex];
+                    u8 oldSelection = gLocalSpeedchoiceConfig.optionConfig[trueIndex];
                     gLocalSpeedchoiceConfig.optionConfig[trueIndex] = ProcessGeneralInput((struct SpeedchoiceOption *)&SpeedchoiceOptions[trueIndex], selection, FALSE);
                     DrawGeneralChoices((struct SpeedchoiceOption *)&SpeedchoiceOptions[trueIndex], gLocalSpeedchoiceConfig.optionConfig[trueIndex], gLocalSpeedchoiceConfig.pageIndex, FALSE);
-					if(oldSelection != gLocalSpeedchoiceConfig.optionConfig[trueIndex])
-						DrawPageOptions(taskId, gLocalSpeedchoiceConfig.pageNum); // HACK!!! The page has to redraw. But only redraw it if the selection changed, otherwise it lags.
+                    if(oldSelection != gLocalSpeedchoiceConfig.optionConfig[trueIndex])
+                        DrawPageOptions(taskId, gLocalSpeedchoiceConfig.pageNum); // HACK!!! The page has to redraw. But only redraw it if the selection changed, otherwise it lags.
                 }
                 break;
             case PAGE:
@@ -930,361 +953,6 @@ static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
         }
     }
 }
-
-/*
-static void Task_OptionMenuProcessInput(u8 taskId)
-{
-    if (gMain.newKeys & A_BUTTON)
-    {
-        if (gTasks[taskId].data[TD_MENUSELECTION] == MENUITEM_CANCEL)
-            gTasks[taskId].func = Task_OptionMenuSave;
-    }
-    else if (gMain.newKeys & B_BUTTON)
-    {
-        gTasks[taskId].func = Task_OptionMenuSave;
-    }
-    else if (gMain.newKeys & DPAD_UP)
-    {
-        if (gTasks[taskId].data[TD_MENUSELECTION] > 0)
-            gTasks[taskId].data[TD_MENUSELECTION]--;
-        else
-            gTasks[taskId].data[TD_MENUSELECTION] = 6;
-        HighlightOptionMenuItem(gTasks[taskId].data[TD_MENUSELECTION]);
-    }
-    else if (gMain.newKeys & DPAD_DOWN)
-    {
-        if (gTasks[taskId].data[TD_MENUSELECTION] <= 5)
-            gTasks[taskId].data[TD_MENUSELECTION]++;
-        else
-            gTasks[taskId].data[TD_MENUSELECTION] = 0;
-        HighlightOptionMenuItem(gTasks[taskId].data[TD_MENUSELECTION]);
-    }
-    else
-    {
-        u8 previousOption;
-
-        switch (gTasks[taskId].data[TD_MENUSELECTION])
-        {
-        case MENUITEM_TEXTSPEED:
-            previousOption = gTasks[taskId].data[TD_TEXTSPEED];
-            gTasks[taskId].data[TD_TEXTSPEED] = TextSpeed_ProcessInput(gTasks[taskId].data[TD_TEXTSPEED]);
-
-            if (previousOption != gTasks[taskId].data[TD_TEXTSPEED])
-                TextSpeed_DrawChoices(gTasks[taskId].data[TD_TEXTSPEED]);
-            break;
-        case MENUITEM_BATTLESCENE:
-            previousOption = gTasks[taskId].data[TD_BATTLESCENE];
-            gTasks[taskId].data[TD_BATTLESCENE] = BattleScene_ProcessInput(gTasks[taskId].data[TD_BATTLESCENE]);
-
-            if (previousOption != gTasks[taskId].data[TD_BATTLESCENE])
-                BattleScene_DrawChoices(gTasks[taskId].data[TD_BATTLESCENE]);
-            break;
-        case MENUITEM_BATTLESTYLE:
-            previousOption = gTasks[taskId].data[TD_BATTLESTYLE];
-            gTasks[taskId].data[TD_BATTLESTYLE] = BattleStyle_ProcessInput(gTasks[taskId].data[TD_BATTLESTYLE]);
-
-            if (previousOption != gTasks[taskId].data[TD_BATTLESTYLE])
-                BattleStyle_DrawChoices(gTasks[taskId].data[TD_BATTLESTYLE]);
-            break;
-        case MENUITEM_SOUND:
-            previousOption = gTasks[taskId].data[TD_SOUND];
-            gTasks[taskId].data[TD_SOUND] = Sound_ProcessInput(gTasks[taskId].data[TD_SOUND]);
-
-            if (previousOption != gTasks[taskId].data[TD_SOUND])
-                Sound_DrawChoices(gTasks[taskId].data[TD_SOUND]);
-            break;
-        case MENUITEM_BUTTONMODE:
-            previousOption = gTasks[taskId].data[TD_BUTTONMODE];
-            gTasks[taskId].data[TD_BUTTONMODE] = ButtonMode_ProcessInput(gTasks[taskId].data[TD_BUTTONMODE]);
-
-            if (previousOption != gTasks[taskId].data[TD_BUTTONMODE])
-                ButtonMode_DrawChoices(gTasks[taskId].data[TD_BUTTONMODE]);
-            break;
-        case MENUITEM_FRAMETYPE:
-            previousOption = gTasks[taskId].data[TD_FRAMETYPE];
-            gTasks[taskId].data[TD_FRAMETYPE] = FrameType_ProcessInput(gTasks[taskId].data[TD_FRAMETYPE]);
-
-            if (previousOption != gTasks[taskId].data[TD_FRAMETYPE])
-                FrameType_DrawChoices(gTasks[taskId].data[TD_FRAMETYPE]);
-            break;
-        default:
-            return;
-        }
-
-        if (sArrowPressed)
-        {
-            sArrowPressed = FALSE;
-            CopyWindowToVram(WIN_OPTIONS, 2);
-        }
-    }
-}
-
-static void Task_OptionMenuSave(u8 taskId)
-{
-    gSaveBlock2Ptr->optionsTextSpeed = gTasks[taskId].data[TD_TEXTSPEED];
-    gSaveBlock2Ptr->optionsBattleSceneOff = gTasks[taskId].data[TD_BATTLESCENE];
-    gSaveBlock2Ptr->optionsBattleStyle = gTasks[taskId].data[TD_BATTLESTYLE];
-    gSaveBlock2Ptr->optionsSound = gTasks[taskId].data[TD_SOUND];
-    gSaveBlock2Ptr->optionsButtonMode = gTasks[taskId].data[TD_BUTTONMODE];
-    gSaveBlock2Ptr->optionsWindowFrameType = gTasks[taskId].data[TD_FRAMETYPE];
-
-    BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
-    gTasks[taskId].func = Task_OptionMenuFadeOut;
-}
-
-static void Task_OptionMenuFadeOut(u8 taskId)
-{
-    if (!gPaletteFade.active)
-    {
-        DestroyTask(taskId);
-        FreeAllWindowBuffers();
-        SetMainCallback2(gMain.savedCallback);
-    }
-}
-
-static void HighlightOptionMenuItem(u8 index)
-{
-    SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(16, 224));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(index * 16 + 40, index * 16 + 56));
-}
-
-static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style)
-{
-    u8 dst[16];
-    u16 i;
-
-    for (i = 0; *text != EOS && i <= 14; i++)
-        dst[i] = *(text++);
-
-    if (style != 0)
-    {
-        dst[2] = 4;
-        dst[5] = 5;
-    }
-
-    dst[i] = EOS;
-    PrintTextOnWindow(WIN_OPTIONS, 1, dst, x, y + 1, TEXT_SPEED_FF, NULL);
-}
-
-static u8 TextSpeed_ProcessInput(u8 selection)
-{
-    if (gMain.newKeys & DPAD_RIGHT)
-    {
-        if (selection <= 1)
-            selection++;
-        else
-            selection = 0;
-
-        sArrowPressed = TRUE;
-    }
-    if (gMain.newKeys & DPAD_LEFT)
-    {
-        if (selection != 0)
-            selection--;
-        else
-            selection = 2;
-
-        sArrowPressed = TRUE;
-    }
-    return selection;
-}
-
-static void TextSpeed_DrawChoices(u8 selection)
-{
-    u8 styles[3];
-    s32 widthSlow, widthMid, widthFast, xMid;
-
-    styles[0] = 0;
-    styles[1] = 0;
-    styles[2] = 0;
-    styles[selection] = 1;
-
-    DrawOptionMenuChoice(gText_TextSpeedSlow, 104, 0, styles[0]);
-
-    widthSlow = GetStringWidth(1, gText_TextSpeedSlow, 0);
-    widthMid = GetStringWidth(1, gText_TextSpeedMid, 0);
-    widthFast = GetStringWidth(1, gText_TextSpeedFast, 0);
-
-    widthMid -= 94;
-    xMid = (widthSlow - widthMid - widthFast) / 2 + 104;
-    DrawOptionMenuChoice(gText_TextSpeedMid, xMid, 0, styles[1]);
-
-    DrawOptionMenuChoice(gText_TextSpeedFast, GetStringRightAlignXOffset(1, gText_TextSpeedFast, 198), 0, styles[2]);
-}
-
-static u8 BattleScene_ProcessInput(u8 selection)
-{
-    if (gMain.newKeys & (DPAD_LEFT | DPAD_RIGHT))
-    {
-        selection ^= 1;
-        sArrowPressed = TRUE;
-    }
-
-    return selection;
-}
-
-static void BattleScene_DrawChoices(u8 selection)
-{
-    u8 styles[2];
-
-    styles[0] = 0;
-    styles[1] = 0;
-    styles[selection] = 1;
-
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, 16, styles[0]);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(1, gText_BattleSceneOff, 198), 16, styles[1]);
-}
-
-static u8 BattleStyle_ProcessInput(u8 selection)
-{
-    if (gMain.newKeys & (DPAD_LEFT | DPAD_RIGHT))
-    {
-        selection ^= 1;
-        sArrowPressed = TRUE;
-    }
-
-    return selection;
-}
-
-static void BattleStyle_DrawChoices(u8 selection)
-{
-    u8 styles[2];
-
-    styles[0] = 0;
-    styles[1] = 0;
-    styles[selection] = 1;
-
-    DrawOptionMenuChoice(gText_BattleStyleShift, 104, 32, styles[0]);
-    DrawOptionMenuChoice(gText_BattleStyleSet, GetStringRightAlignXOffset(1, gText_BattleStyleSet, 198), 32, styles[1]);
-}
-
-static u8 Sound_ProcessInput(u8 selection)
-{
-    if (gMain.newKeys & (DPAD_LEFT | DPAD_RIGHT))
-    {
-        selection ^= 1;
-        SetPokemonCryStereo(selection);
-        sArrowPressed = TRUE;
-    }
-
-    return selection;
-}
-
-static void Sound_DrawChoices(u8 selection)
-{
-    u8 styles[2];
-
-    styles[0] = 0;
-    styles[1] = 0;
-    styles[selection] = 1;
-
-    DrawOptionMenuChoice(gText_SoundMono, 104, 48, styles[0]);
-    DrawOptionMenuChoice(gText_SoundStereo, GetStringRightAlignXOffset(1, gText_SoundStereo, 198), 48, styles[1]);
-}
-
-static u8 FrameType_ProcessInput(u8 selection)
-{
-    if (gMain.newKeys & DPAD_RIGHT)
-    {
-        if (selection < WINDOW_FRAMES_COUNT - 1)
-            selection++;
-        else
-            selection = 0;
-
-        LoadBgTiles(1, GetWindowFrameTilesPal(selection)->tiles, 0x120, 0x1A2);
-        LoadPalette(GetWindowFrameTilesPal(selection)->pal, 0x70, 0x20);
-        sArrowPressed = TRUE;
-    }
-    if (gMain.newKeys & DPAD_LEFT)
-    {
-        if (selection != 0)
-            selection--;
-        else
-            selection = WINDOW_FRAMES_COUNT - 1;
-
-        LoadBgTiles(1, GetWindowFrameTilesPal(selection)->tiles, 0x120, 0x1A2);
-        LoadPalette(GetWindowFrameTilesPal(selection)->pal, 0x70, 0x20);
-        sArrowPressed = TRUE;
-    }
-    return selection;
-}
-
-static void FrameType_DrawChoices(u8 selection)
-{
-    u8 text[16];
-    u8 n = selection + 1;
-    u16 i;
-
-    for (i = 0; gText_FrameTypeNumber[i] != EOS && i <= 5; i++)
-        text[i] = gText_FrameTypeNumber[i];
-
-    // Convert a number to decimal string
-    if (n / 10 != 0)
-    {
-        text[i] = n / 10 + CHAR_0;
-        i++;
-        text[i] = n % 10 + CHAR_0;
-        i++;
-    }
-    else
-    {
-        text[i] = n % 10 + CHAR_0;
-        i++;
-        text[i] = 0x77;
-        i++;
-    }
-
-    text[i] = EOS;
-
-    DrawOptionMenuChoice(gText_FrameType, 104, 80, 0);
-    DrawOptionMenuChoice(text, 128, 80, 1);
-}
-
-static u8 ButtonMode_ProcessInput(u8 selection)
-{
-    if (gMain.newKeys & DPAD_RIGHT)
-    {
-        if (selection <= 1)
-            selection++;
-        else
-            selection = 0;
-
-        sArrowPressed = TRUE;
-    }
-    if (gMain.newKeys & DPAD_LEFT)
-    {
-        if (selection != 0)
-            selection--;
-        else
-            selection = 2;
-
-        sArrowPressed = TRUE;
-    }
-    return selection;
-}
-
-static void ButtonMode_DrawChoices(u8 selection)
-{
-    s32 widthNormal, widthLR, widthLA, xLR;
-    u8 styles[3];
-
-    styles[0] = 0;
-    styles[1] = 0;
-    styles[2] = 0;
-    styles[selection] = 1;
-
-    DrawOptionMenuChoice(gText_ButtonTypeNormal, 104, 64, styles[0]);
-
-    widthNormal = GetStringWidth(1, gText_ButtonTypeNormal, 0);
-    widthLR = GetStringWidth(1, gText_ButtonTypeLR, 0);
-    widthLA = GetStringWidth(1, gText_ButtonTypeLEqualsA, 0);
-
-    widthLR -= 94;
-    xLR = (widthNormal - widthLR - widthLA) / 2 + 104;
-    DrawOptionMenuChoice(gText_ButtonTypeLR, xLR, 64, styles[1]);
-
-    DrawOptionMenuChoice(gText_ButtonTypeLEqualsA, GetStringRightAlignXOffset(1, gText_ButtonTypeLEqualsA, 198), 64, styles[2]);
-}*/
 
 void DrawHeaderWindow(void)
 {
@@ -1328,7 +996,7 @@ void DrawPageOptions(u8 taskId, u8 page)
 
     PrintTextOnWindow(WIN_OPTIONS, 1, gSpeedchoiceOptionPage, 4, NEWMENUOPTIONCOORDS(5), TEXT_SPEED_FF, NULL);
     PrintTextOnWindow(WIN_OPTIONS, 1, gSpeedchoiceOptionStartGame, 4, NEWMENUOPTIONCOORDS(6), TEXT_SPEED_FF, NULL);
-	DrawPageChoice(gLocalSpeedchoiceConfig.pageNum);
+    DrawPageChoice(gLocalSpeedchoiceConfig.pageNum);
     CopyWindowToVram(WIN_OPTIONS, 3);
 }
 
@@ -1341,19 +1009,6 @@ void SetPageIndexFromTrueIndex(u8 taskId, s16 index) // data is s16.
     else
         gLocalSpeedchoiceConfig.pageIndex = (oldmin((index % OPTIONS_PER_PAGE), OPTIONS_PER_PAGE));
 }
-
-// Deprecated
-/*static void DrawOptionMenuTexts(void)
-{
-    u8 i;
-
-    FillWindowPixelBuffer(WIN_OPTIONS, 0x11);
-    for (i = 0; i < ALLOPTIONS_PER_PAGE; i++)
-    {
-        PrintTextOnWindow(WIN_OPTIONS, 1, sOptionMenuItemsNames[i], 8, (i * 16) + 1, TEXT_SPEED_FF, NULL);
-    }
-    CopyWindowToVram(WIN_OPTIONS, 3);
-}*/
 
 static void sub_80BB154(void)
 {
