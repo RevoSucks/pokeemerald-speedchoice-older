@@ -65,7 +65,7 @@ const struct WindowTemplate sSpeedchoiceMenuWinTemplates[] =
     {1, 2, 1, 0x1A, 2, 1, 2},
     {0, 2, 5, 0x1A, 14, 1, 0x36},
     {2, 2, 15, 0x1A, 4, 15, 427},
-	{2, 14, 8, 4, 4, 15, 427}, // YES/NO
+	{2, 23, 9, 4, 4, 15, 531}, // YES/NO
     DUMMY_WIN_TEMPLATE
 };
 
@@ -716,13 +716,15 @@ static void DrawTooltip(u8 taskId, const u8 *str, int speed, bool32 isYesNo)
     CopyWindowToVram(SPD_WIN_TOOLTIP, 3);
 	if(isYesNo)
 	{
+		FillWindowPixelBuffer(3, 0x11);
 		DrawMainMenuWindowBorder(&sSpeedchoiceMenuWinTemplates[3], 418);
 		PutWindowTilemap(3);
 		CopyWindowToVram(3, 3);
 	}
     SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(1, 241));
     SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE_(114, 160));
-    gTasks[taskId].func = Task_WaitForTooltip;
+	if(!isYesNo)
+		gTasks[taskId].func = Task_WaitForTooltip;
 }
 
 u32 CountLeadingZeros(u32 value)
@@ -771,9 +773,79 @@ u32 CalculateCheckValue(u8 taskId)
     return checkValue;
 }
 
+static void SaveSpeedchoiceOptions(u8 taskId)
+{
+    // once again i would prefer to use an extensible for loop here, but the options being bitfields means that it cannot currently be done.
+    gSaveBlock2Ptr->speedchoiceConfig.bwexp = gLocalSpeedchoiceConfig.optionConfig[BWEXP];
+    gSaveBlock2Ptr->speedchoiceConfig.plotless = gLocalSpeedchoiceConfig.optionConfig[PLOTLESS];
+    gSaveBlock2Ptr->speedchoiceConfig.instantText = gLocalSpeedchoiceConfig.optionConfig[INSTANTTEXT];
+    gSaveBlock2Ptr->speedchoiceConfig.spinners = gLocalSpeedchoiceConfig.optionConfig[SPINNERS];
+    gSaveBlock2Ptr->speedchoiceConfig.maxVision = gLocalSpeedchoiceConfig.optionConfig[MAXVISION];
+    gSaveBlock2Ptr->speedchoiceConfig.nerfRoxanne = gLocalSpeedchoiceConfig.optionConfig[NERFROXANNE];
+    gSaveBlock2Ptr->speedchoiceConfig.superbike = gLocalSpeedchoiceConfig.optionConfig[SUPERBIKE];
+    gSaveBlock2Ptr->speedchoiceConfig.newwildencounters = gLocalSpeedchoiceConfig.optionConfig[NEWWILDENC];
+    gSaveBlock2Ptr->speedchoiceConfig.earlyfly = gLocalSpeedchoiceConfig.optionConfig[EARLYFLY];
+    gSaveBlock2Ptr->speedchoiceConfig.runEverywhere = gLocalSpeedchoiceConfig.optionConfig[RUN_EVERYWHERE];
+    gSaveBlock2Ptr->speedchoiceConfig.memeIsland = gLocalSpeedchoiceConfig.optionConfig[MEME_ISLAND];
+    gSaveBlock2Ptr->speedchoiceConfig.easyfrontier = gLocalSpeedchoiceConfig.optionConfig[EASYFRONTIER];
+    gSaveBlock2Ptr->speedchoiceConfig.betterMarts = gLocalSpeedchoiceConfig.optionConfig[BETTER_MARTS];
+    gSaveBlock2Ptr->speedchoiceConfig.goodEarlyWilds = gLocalSpeedchoiceConfig.optionConfig[GOOD_EARLY_WILDS];
+    gSaveBlock2Ptr->speedchoiceConfig.earlysurf = gLocalSpeedchoiceConfig.optionConfig[EARLYSURF];
+}
+
+extern void task_new_game_prof_birch_speech_1(u8);
+
+static void Task_SpeedchoiceMenuFadeOut(u8 taskId)
+{
+    if(!gPaletteFade.active)
+    {
+        u8 *addr;
+        u32 size;
+
+		addr = (u8 *)VRAM;
+        size = 0x18000;
+        while (1)
+        {
+            DmaFill16(3, 0, addr, 0x1000);
+            addr += 0x1000;
+            size -= 0x1000;
+            if (size <= 0x1000)
+            {
+                DmaFill16(3, 0, addr, size);
+                break;
+            }
+        }
+        DmaClear32(3, OAM, OAM_SIZE);
+        DmaClear16(3, PLTT, PLTT_SIZE);
+		HideBg(0);
+		HideBg(1);
+		HideBg(2);
+        gTasks[taskId].func = task_new_game_prof_birch_speech_1;
+    }
+}
+
 static void Task_AskToStartGame(u8 taskId)
 {
-	// TODO
+    switch (ProcessMenuInputNoWrap_())
+    {
+    case 0:  // YES
+		PlayBGM(MUS_STOP);
+        PlaySE(SE_SELECT);
+		SaveSpeedchoiceOptions(taskId);
+		BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
+        gTasks[taskId].func = Task_SpeedchoiceMenuFadeOut;
+        break;
+    case 1:  // NO
+    case -1: // B button
+        PlaySE(SE_SELECT);
+		ClearWindowTilemap(SPD_WIN_TOOLTIP);
+		ClearWindowTilemap(3);
+		sub_8032250(&sSpeedchoiceMenuWinTemplates[SPD_WIN_TOOLTIP]);
+		sub_8032250(&sSpeedchoiceMenuWinTemplates[3]);
+        DrawPageOptions(taskId, gLocalSpeedchoiceConfig.pageNum);
+        gTasks[taskId].func = Task_SpeedchoiceMenuProcessInput;
+        break;
+    }
 }
 
 extern const struct WindowTemplate gUnknown_085B1DDC;
@@ -783,7 +855,7 @@ static void Task_SpeedchoiceMenuSave(u8 taskId)
     ConvertIntToHexStringN(gStringVar1, CalculateCheckValue(taskId), STR_CONV_MODE_LEADING_ZEROS, 8);
 	StringExpandPlaceholders(gStringVar4, gSpeedchoiceStartGameText);
 	DrawTooltip(taskId, gStringVar4, TEXT_SPEED_FF, TRUE); // a bit of a hack, but whatever.
-	CreateYesNoMenu(&sSpeedchoiceMenuWinTemplates[3], 427, 15, 0);
+	CreateYesNoMenu(&sSpeedchoiceMenuWinTemplates[3], 418, 2, 0);
 
     gTasks[taskId].func = Task_AskToStartGame;
 }
