@@ -65,6 +65,7 @@ const struct WindowTemplate sSpeedchoiceMenuWinTemplates[] =
     {1, 2, 1, 0x1A, 2, 1, 2},
     {0, 2, 5, 0x1A, 14, 1, 0x36},
     {2, 2, 15, 0x1A, 4, 15, 427},
+	{2, 14, 8, 4, 4, 15, 427}, // YES/NO
     DUMMY_WIN_TEMPLATE
 };
 
@@ -705,22 +706,86 @@ static void Task_WaitForTooltip(u8 taskId)
 
 extern void DrawMainMenuWindowBorder(struct WindowTemplate *template, u16 baseTileNum);
 
-static void DrawTooltip(u8 taskId, struct SpeedchoiceOption *option)
+static void DrawTooltip(u8 taskId, const u8 *str, int speed, bool32 isYesNo)
 {
     FillWindowPixelBuffer(SPD_WIN_TOOLTIP, 0x11);
-    PrintTextOnWindow(SPD_WIN_TOOLTIP, 1, option->tooltip, 0, 1, GetPlayerTextSpeed(), NULL);
+    PrintTextOnWindow(SPD_WIN_TOOLTIP, 1, str, 0, 1, speed, NULL);
 	//sub_8098858(SPD_WIN_TOOLTIP, 0x1D5, 0);
 	DrawMainMenuWindowBorder(&sSpeedchoiceMenuWinTemplates[SPD_WIN_TOOLTIP], 418);
 	PutWindowTilemap(SPD_WIN_TOOLTIP);
     CopyWindowToVram(SPD_WIN_TOOLTIP, 3);
+	if(isYesNo)
+	{
+		DrawMainMenuWindowBorder(&sSpeedchoiceMenuWinTemplates[3], 418);
+		PutWindowTilemap(3);
+		CopyWindowToVram(3, 3);
+	}
     SetGpuReg(REG_OFFSET_WIN1H, WIN_RANGE(1, 241));
     SetGpuReg(REG_OFFSET_WIN1V, WIN_RANGE_(114, 160));
     gTasks[taskId].func = Task_WaitForTooltip;
 }
 
+u32 CountLeadingZeros(u32 value)
+{
+    u32 result = 0;
+
+    if (!value)
+        return 32;
+
+    while (value < 0x80000000)
+    {
+        result ++;
+        value <<= 1;
+    }
+
+    return result;
+}
+
+u8 GetNumBitsUsed(u8 numOptions)
+{
+    return 32 - CountLeadingZeros(numOptions);
+}
+
+u32 CalculateCheckValue(u8 taskId)
+{
+    u32 checkValue;
+    u8 i; // current option
+    u8 totalBitsUsed;
+
+    // do checkvalue increment for 32-bit value.
+    for(checkValue = 0, i = 0, totalBitsUsed = 0; i < CURRENT_OPTIONS_NUM; i++)
+    {
+        totalBitsUsed += GetNumBitsUsed(SpeedchoiceOptions[i].optionCount);
+        checkValue += gLocalSpeedchoiceConfig.optionConfig[i] << (i + (totalBitsUsed - 1));
+    }
+
+    // seed RNG with checkValue for more hash-like number.
+    checkValue = 0x41c64e6d * checkValue + 0x00006073;
+
+    // xor with randomizer value, if one is present.
+    checkValue = checkValue ^ gRandomizerCheckValue;
+
+    // get rid of sign extension.
+    checkValue = abs(checkValue);
+
+    return checkValue;
+}
+
+static void Task_AskToStartGame(u8 taskId)
+{
+	// TODO
+}
+
+extern const struct WindowTemplate gUnknown_085B1DDC;
+
 static void Task_SpeedchoiceMenuSave(u8 taskId)
 {
-    // TODO
+    ConvertIntToHexStringN(gStringVar1, CalculateCheckValue(taskId), STR_CONV_MODE_LEADING_ZEROS, 8);
+	StringExpandPlaceholders(gStringVar4, gSpeedchoiceStartGameText);
+	DrawTooltip(taskId, gStringVar4, TEXT_SPEED_FF, TRUE); // a bit of a hack, but whatever.
+	CreateYesNoMenu(&sSpeedchoiceMenuWinTemplates[3], 427, 15, 0);
+
+    gTasks[taskId].func = Task_AskToStartGame;
 }
 
 static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
@@ -733,7 +798,7 @@ static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
     else if (gMain.newKeys & SELECT_BUTTON) // do tooltip.
     {
         if(gLocalSpeedchoiceConfig.trueIndex <= CURRENT_OPTIONS_NUM && SpeedchoiceOptions[gLocalSpeedchoiceConfig.trueIndex].tooltip != NULL)
-            DrawTooltip(taskId, (struct SpeedchoiceOption *)&SpeedchoiceOptions[gLocalSpeedchoiceConfig.trueIndex]);
+            DrawTooltip(taskId, SpeedchoiceOptions[gLocalSpeedchoiceConfig.trueIndex].tooltip, GetPlayerTextSpeed(), FALSE);
     }
     else if (gMain.newKeys & DPAD_UP)
     {
@@ -772,9 +837,11 @@ static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
                     //if(trueIndex == NERFROXANNE)
                     //    gLocalSpeedchoiceConfig.optionConfig[trueIndex] = ProcessGeneralInput((struct SpeedchoiceOption *)&SpeedchoiceOptions[trueIndex], selection, TRUE);
                     //else
+					u8 oldSelection = gLocalSpeedchoiceConfig.optionConfig[trueIndex];
                     gLocalSpeedchoiceConfig.optionConfig[trueIndex] = ProcessGeneralInput((struct SpeedchoiceOption *)&SpeedchoiceOptions[trueIndex], selection, FALSE);
                     DrawGeneralChoices((struct SpeedchoiceOption *)&SpeedchoiceOptions[trueIndex], gLocalSpeedchoiceConfig.optionConfig[trueIndex], gLocalSpeedchoiceConfig.pageIndex, FALSE);
-					DrawPageOptions(taskId, gLocalSpeedchoiceConfig.pageNum); // HACK!!! The page has to redraw.
+					if(oldSelection != gLocalSpeedchoiceConfig.optionConfig[trueIndex])
+						DrawPageOptions(taskId, gLocalSpeedchoiceConfig.pageNum); // HACK!!! The page has to redraw. But only redraw it if the selection changed, otherwise it lags.
                 }
                 break;
             case PAGE:
