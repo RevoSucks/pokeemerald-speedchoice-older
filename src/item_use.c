@@ -969,7 +969,7 @@ void sub_80FE058(void)
 	if(sUsedEscapeOption == TRUE)
 	{
 		CopyItemName(ITEM_ESCAPE_ROPE, gStringVar2);
-		StringExpandPlaceholders(gStringVar4, gOtherText_UsedItem);
+		StringExpandPlaceholders(gStringVar4, gText_PlayerUsedVar2);
 	}
 	else
 	{
