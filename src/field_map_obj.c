@@ -23,6 +23,7 @@
 #include "trainer_see.h"
 #include "decoration.h"
 #include "field_map_obj.h"
+#include "speedchoice.h"
 
 #define NUM_FIELD_MAP_OBJECT_TEMPLATES 0x51
 
@@ -297,7 +298,7 @@ static u8 GetFieldObjectIdByLocalId(u8 localId)
 }
 
 // This function has the same nonmatching quirk as in Ruby/Sapphire.
-#ifdef NONMATCHING
+//#ifdef NONMATCHING
 static u8 InitFieldObjectStateFromTemplate(struct MapObjectTemplate *template, u8 mapNum, u8 mapGroup)
 {
     struct MapObject *mapObject;
@@ -317,7 +318,13 @@ static u8 InitFieldObjectStateFromTemplate(struct MapObjectTemplate *template, u
     mapObject->active = TRUE;
     mapObject->mapobj_bit_2 = TRUE;
     mapObject->graphicsId = template->graphicsId;
-    mapObject->animPattern = template->movementType;
+	
+	if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE && gPlayerAvatar.mapObjectId != slot && (template->unkC == 1 || template->unkC == 3))
+        mapObject->animPattern = 1;
+    else
+        mapObject->animPattern = template->movementType;
+	
+    //mapObject->animPattern = template->movementType;
     mapObject->localId = template->localId;
     mapObject->mapNum = mapNum;
     mapObject->mapGroup = mapGroup;
@@ -332,8 +339,17 @@ static u8 InitFieldObjectStateFromTemplate(struct MapObjectTemplate *template, u
     // For some reason, 0x0F is placed in r9, to be used later
     mapObject->range.as_nybbles.x = template->unkA_0;
     mapObject->range.as_nybbles.y = template->unkA_4;
-    mapObject->trainerType = template->unkC;
-    mapObject->trainerRange_berryTreeId = template->unkE;
+	
+	if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE && gPlayerAvatar.mapObjectId != slot && (template->unkC == 1 || template->unkC == 3))
+        mapObject->trainerType = 1;
+    else
+        mapObject->trainerType = template->unkC;
+    if(CheckSpeedchoiceOption(MAXVISION, OFF_2) == FALSE && gPlayerAvatar.mapObjectId != slot && (template->unkC == 1 || template->unkC == 3))
+        mapObject->trainerRange_berryTreeId = MAX_VISION_RANGE;
+    else
+        mapObject->trainerRange_berryTreeId = template->unkE;
+    //mapObject->trainerType = template->unkC;
+    //mapObject->trainerRange_berryTreeId = template->unkE;
     mapObject->mapobj_unk_20 = gUnknown_085055CD[template->movementType];
     FieldObjectSetDirection(mapObject, mapObject->mapobj_unk_20);
     FieldObjectHandleDynamicGraphicsId(mapObject);
@@ -352,7 +368,7 @@ static u8 InitFieldObjectStateFromTemplate(struct MapObjectTemplate *template, u
     }
     return slot;
 }
-#else
+/*#else
 static __attribute__((naked)) u8 InitFieldObjectStateFromTemplate(struct MapObjectTemplate *template, u8 mapId, u8 mapGroupId)
 {
     asm_unified("\tpush {r4-r7,lr}\n"
@@ -507,7 +523,7 @@ static __attribute__((naked)) u8 InitFieldObjectStateFromTemplate(struct MapObje
                 "\tbx r1\n"
                 ".pool");
 }
-#endif
+#endif*/
 
 u8 unref_sub_808D77C(u8 localId)
 {
@@ -758,7 +774,10 @@ static void MakeObjectTemplateFromFieldObjectGraphicsInfoWithCallbackIndex(u16 g
 
 static void MakeObjectTemplateFromFieldObjectTemplate(struct MapObjectTemplate *mapObjectTemplate, struct SpriteTemplate *spriteTemplate, const struct SubspriteTable **subspriteTables)
 {
-    MakeObjectTemplateFromFieldObjectGraphicsInfoWithCallbackIndex(mapObjectTemplate->graphicsId, mapObjectTemplate->movementType, spriteTemplate, subspriteTables);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE && (mapObjectTemplate->unkC == 3 || mapObjectTemplate->unkC == 1))
+        MakeObjectTemplateFromFieldObjectGraphicsInfoWithCallbackIndex(mapObjectTemplate->graphicsId, 1, spriteTemplate, subspriteTables);
+    else
+        MakeObjectTemplateFromFieldObjectGraphicsInfoWithCallbackIndex(mapObjectTemplate->graphicsId, mapObjectTemplate->movementType, spriteTemplate, subspriteTables);
 }
 
 u8 AddPseudoFieldObject(u16 graphicsId, void (*callback)(struct Sprite *), s16 x, s16 y, u8 subpriority)
@@ -1850,13 +1869,35 @@ bool8 sub_808F4C8(struct MapObject *mapObject, struct Sprite *sprite)
     return FALSE;
 }
 
+u8 GetNextDirection(struct MapObject *mapObject, struct Sprite *sprite)
+{
+    switch(mapObject->mapobj_unk_18)
+    {
+        case DIR_SOUTH:
+            return DIR_WEST;
+        case DIR_NORTH:
+            return DIR_EAST;
+        case DIR_WEST:
+            return DIR_NORTH;
+        case DIR_EAST:
+            return DIR_SOUTH;
+    }
+}
+
 bool8 sub_808F4E8(struct MapObject *mapObject, struct Sprite *sprite)
 {
     u8 directions[4];
+	u8 newDirections[4];
     u8 chosenDirection;
 
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
     memcpy(directions, gUnknown_0850D710, sizeof directions);
-    chosenDirection = directions[Random() & 0x03];
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        chosenDirection = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        chosenDirection = GetNextDirection(mapObject, sprite);
+    else
+        chosenDirection = directions[Random() & 3];
     FieldObjectSetDirection(mapObject, chosenDirection);
     sprite->data[1] = 5;
     if (npc_block_way__next_tile(mapObject, chosenDirection))
@@ -2181,6 +2222,13 @@ bool8 sub_808FA3C(struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_ANY);
     if (direction == 0)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = directions[Random() & 0x03];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -2231,7 +2279,16 @@ bool8 sub_808FB64(struct MapObject *mapObject, struct Sprite *sprite)
     u8 direction;
 
     memcpy(directions, gUnknown_0850D770, sizeof directions);
-    direction = directions[Random() & 0x01];
+	{
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
+		direction = directions[Random() & 0x01];
+	}
     FieldObjectSetDirection(mapObject, direction);
     sprite->data[1] = 5;
     if (npc_block_way__next_tile(mapObject, direction))
@@ -2302,7 +2359,16 @@ bool8 sub_808FCE8(struct MapObject *mapObject, struct Sprite *sprite)
     u8 direction;
 
     memcpy(directions, gUnknown_0850D790, sizeof directions);
-    direction = directions[Random() & 0x01];
+	{
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
+		direction = directions[Random() & 0x01];
+	}
     FieldObjectSetDirection(mapObject, direction);
     sprite->data[1] = 5;
     if (npc_block_way__next_tile(mapObject, direction))
@@ -2509,6 +2575,13 @@ bool8 sub_8090148 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_NORTH_SOUTH);
     if (direction == 0)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = directions[Random() & 0x01];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -2562,6 +2635,13 @@ bool8 sub_8090288 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_EAST_WEST);
     if (direction == 0)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = directions[Random() & 0x01];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -2615,6 +2695,13 @@ bool8 sub_80903C8 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_NORTH_WEST);
     if (direction == 0)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = directions[Random() & 0x01];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -2668,6 +2755,13 @@ bool8 sub_8090508 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_NORTH_EAST);
     if (direction == 0)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = directions[Random() & 0x01];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -2721,6 +2815,13 @@ bool8 sub_8090648 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_SOUTH_WEST);
     if (direction == 0)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = directions[Random() & 0x01];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -2774,6 +2875,13 @@ bool8 sub_8090788 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_SOUTH_EAST);
     if (direction == 0)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = directions[Random() & 0x01];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -2827,6 +2935,13 @@ bool8 sub_80908C8 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_NORTH_SOUTH_WEST);
     if (direction == 0)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = directions[Random() & 0x03];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -2880,6 +2995,13 @@ bool8 sub_8090A08 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_NORTH_SOUTH_EAST);
     if (direction == 0)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = directions[Random() & 0x03];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -2933,6 +3055,13 @@ bool8 sub_8090B48 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_NORTH_EAST_WEST);
     if (direction == 0)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = directions[Random() & 0x03];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -2986,6 +3115,13 @@ bool8 sub_8090C88 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_SOUTH_EAST_WEST);
     if (direction == 0)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = directions[Random() & 0x03];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -3031,6 +3167,13 @@ bool8 sub_8090D90 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_ANY);
     if (direction == 0)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = directions[mapObject->mapobj_unk_18];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -3099,6 +3242,13 @@ bool8 sub_8090F30 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = gUnknown_085055CD[mapObject->animPattern];
     if (mapObject->mapobj_unk_21)
     {
+	u8 newDirections[4];
+	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
+        direction = newDirections[Random() % 4];
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
+        direction = GetNextDirection(mapObject, sprite);
+    else
         direction = GetOppositeDirection(direction);
     }
     FieldObjectSetDirection(mapObject, direction);

@@ -962,7 +962,7 @@ void sub_80FE03C(u8 taskId)
     SetUpItemUseCallback(taskId);
 }
 
-extern bool8 sUsedEscapeOption;
+extern bool32 sUsedEscapeOption;
 
 void sub_80FE058(void)
 {

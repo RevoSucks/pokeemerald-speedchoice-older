@@ -180,6 +180,11 @@ _0809FB34:
 	ldr r0, =StartMenu_BattlePyramidRetire
 	cmp r1, r0
 	beq _0809FBA0
+	@ SPEEDCHOICE INSERTION START
+	ldr r0, =StartMenu_EscapeCallback
+	cmp r1, r0
+	beq _0809FBA0
+	@ SPEEDCHOICE INSERTION END
 	movs r0, 0x1
 	movs r1, 0
 	bl FadeScreen

@@ -102,7 +102,7 @@ const u8 gSpeedchoiceTextSane[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SANE");
 const u8 gSpeedchoiceOptionBWExp[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}B/W EXP");
 const u8 gSpeedchoiceOptionPlotless[] = _("{COLOR RED}{SHADOW LIGHT_RED}PLOTLESS");
 const u8 gSpeedchoiceOptionInstantText[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}INSTANT TEXT");
-const u8 gSpeedchoiceOptionSpinners[] = _("{COLOR RED}{SHADOW LIGHT_RED}SPINNERS");
+const u8 gSpeedchoiceOptionSpinners[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SPINNERS");
 const u8 gSpeedchoiceOptionMaxVision[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}MAX VISION");
 
 // PAGE 2
@@ -236,7 +236,7 @@ const struct SpeedchoiceOption SpeedchoiceOptions[CURRENT_OPTIONS_NUM + 1] = // 
     { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionBWExp, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipBWEXP, OFF, TRUE },
     { 3,         NORMAL, (u8 *)&gSpeedchoiceOptionPlotless, (struct OptionChoiceConfig *)OptionChoiceConfigSemiFull, (u8 *)&gSpeedchoiceTooltipPlotless, KEEP, FALSE },
     { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionInstantText, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipInstantText, OFF, TRUE },
-    { 3,         NORMAL, (u8 *)&gSpeedchoiceOptionSpinners, (struct OptionChoiceConfig *)OptionChoiceConfigNerfKeep, (u8 *)&gSpeedchoiceTooltipSpinners, KEEP, FALSE },
+    { 3,         NORMAL, (u8 *)&gSpeedchoiceOptionSpinners, (struct OptionChoiceConfig *)OptionChoiceConfigNerfKeep, (u8 *)&gSpeedchoiceTooltipSpinners, KEEP, TRUE },
     { 3,         NORMAL, (u8 *)&gSpeedchoiceOptionMaxVision, (struct OptionChoiceConfig *)OptionChoiceConfigSaneHell, (u8 *)&gSpeedchoiceTooltipMaxVision, OFF_2, TRUE },
     { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionNerfRoxanne, (struct OptionChoiceConfig *)OptionChoiceConfigYesNo, (u8 *)&gSpeedchoiceTooltipNerfRoxanne, OFF, TRUE },
     { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionSuperBike, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipSuperBike, OFF, TRUE },

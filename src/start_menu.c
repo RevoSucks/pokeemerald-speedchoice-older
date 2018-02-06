@@ -74,7 +74,12 @@ EWRAM_DATA u8 sBattlePyramidFloorWindowId = 0;
 EWRAM_DATA u8 sStartMenuCursorPos = 0;
 EWRAM_DATA u8 sNumStartMenuActions = 0;
 EWRAM_DATA u8 sCurrentStartMenuActions[9] = {0};
-EWRAM_DATA bool8 sUsedEscapeOption = FALSE;
+EWRAM_DATA bool32 sUsedEscapeOption = FALSE;
+EWRAM_DATA u8 gUnknown_02037619[2] = {0};
+EWRAM_DATA bool8 (*gUnknown_0203761C)(void) = NULL;
+EWRAM_DATA u8 gUnknown_02037620 = 0;
+EWRAM_DATA u8 gUnknown_02037621 = 0;
+EWRAM_DATA u8 gUnknown_02037622 = 0;
 
 // const rom data
 static const struct WindowTemplate gSafariBallsWindowTemplate = {0, 1, 1, 9, 4, 0xF, 8};
@@ -522,7 +527,7 @@ _0809F926:\n\
 	b _0809F940\n\
 	.pool\n\
 _0809F930:\n\
-	ldr r4, =gUnknown_0203761A\n\
+	ldr r4, =gUnknown_02037619 + 0x1\n\
 	adds r0, r4, 0\n\
 	movs r1, 0x2\n\
 	bl PrintStartMenuActions\n\
@@ -570,8 +575,6 @@ _0809F98E:\n\
 	.syntax divided");
 }
 
-extern u8 gUnknown_02037619[];
-
 void sub_809F998(void)
 {
 	gUnknown_02037619[0] = 0;
@@ -594,6 +597,8 @@ void sub_809F9D0(TaskFunc func)
 
 	gUnknown_02037619[0] = 0;
 	gUnknown_02037619[1] = 0;
+
+	DoMapObjectTimerBackup();
 
 	taskId = CreateTask(task50_startmenu, 0x50);
 	SetTaskFuncWithFollowupFunc(taskId, task50_startmenu, func);

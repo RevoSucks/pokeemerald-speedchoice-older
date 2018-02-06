@@ -61,7 +61,7 @@ enum
 
 enum
 {
-    NERF,
+    PURGE,
     KEEP,
     HELL
 };

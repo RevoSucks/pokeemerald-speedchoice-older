@@ -858,7 +858,7 @@
 #define TRAINER_MAY_16          854
 #define TRAINER_ROXANNE_NERFED  855
 
-#define NO_OF_TRAINERS          854
+#define NO_OF_TRAINERS          855
 
 #define TRAINER_PIC_HIKER                  0
 #define TRAINER_PIC_AQUA_GRUNT_M           1

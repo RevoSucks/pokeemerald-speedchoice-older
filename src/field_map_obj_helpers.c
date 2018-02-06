@@ -6,6 +6,10 @@
 #include "malloc.h"
 #include "task.h"
 #include "util.h"
+#include "speedchoice.h"
+
+extern struct MapObjectTimerBackup gMapObjectTimerBackup[MAX_SPRITES];
+extern bool8 gLastMenuWasSubmenu;
 
 typedef void (*SpriteStepFunc)(struct Sprite *sprite, u8 dir);
 
@@ -275,14 +279,51 @@ u8 sub_80978E4(struct Sprite *sprite)
     return v2;
 }
 
+void TryRestoringSpinnerTimerBackup(struct Sprite *sprite)
+{
+    u8 i;
+
+	// if the first entry is backed up, the whole array is. sort of a hack so I dont need to decompile submenu calls.
+    if(gMapObjectTimerBackup[0].backedUp == TRUE && CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE) // only fix bag manip if HELL is enabled.
+    {
+        for(i = 0; i < MAX_SPRITES; i++)
+        {
+            // dont adjust the player's timer for safety.
+            if(gPlayerAvatar.mapObjectId != gSprites[i].data[0])
+            {
+                gSprites[i].data[3] = gMapObjectTimerBackup[i].timer;
+                gMapObjectTimerBackup[i].timer = 0;
+                gMapObjectTimerBackup[i].backedUp = FALSE;
+            }
+        }
+    }
+}
+
 void SetFieldObjectStepTimer(struct Sprite *sprite, u16 timer)
 {
-    sprite->data[3] = timer;
+    TryRestoringSpinnerTimerBackup(sprite);
+    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE && (gMapObjects[sprite->data[0]].trainerType == 1 || gMapObjects[sprite->data[0]].trainerType == 3))
+    {
+        sprite->data[3] = (Random() % 4) * 2 + 2;
+    }
+    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE && (gMapObjects[sprite->data[0]].trainerType == 1 || gMapObjects[sprite->data[0]].trainerType == 3)) // a bit redundant perhaps?
+    {
+        sprite->data[3] = PURGE_SPINNER_TIMER;
+    }
+    else
+    {
+        sprite->data[3] = timer;
+    }
 }
 
 
 bool8 RunFieldObjectStepTimer(struct Sprite *sprite)
 {
+    TryRestoringSpinnerTimerBackup(sprite);
+
+    if (sprite->data[3] == 0) // don't underflow.
+        return TRUE;
+
     sprite->data[3]--;
 
     if (sprite->data[3] == 0)
