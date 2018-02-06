@@ -7,6 +7,7 @@
 #include "string_util.h"
 #include "window.h"
 #include "text.h"
+#include "speedchoice.h"
 
 extern void FillBitmapRect4Bit(struct Bitmap *surface, u16 x, u16 y, u16 width, u16 height, u8 fillValue);
 extern void FillWindowPixelRect(u8 windowId, u8 fillValue, u16 x, u16 y, u16 width, u16 height);
@@ -221,7 +222,11 @@ void RunTextPrinters(void)
 {
     int i;
     u16 temp;
+	bool32 isInstantText = !gSaveBlock2Ptr->speedchoiceConfig.instantText ? TRUE : FALSE; // force correct result. this is dumb, i know.
 
+	do
+	{
+		int numEmpty = 0;
     if (gUnknown_03002F84 == 0)
     {
         for (i = 0; i < 0x20; ++i)
@@ -232,17 +237,26 @@ void RunTextPrinters(void)
                 switch (temp) {
                     case 0:
                         CopyWindowToVram(gTextPrinters[i].subPrinter.windowId, 2);
+						if (gTextPrinters[i].callback != 0)
+                            gTextPrinters[i].callback(&gTextPrinters[i].subPrinter, temp);
+						break;
                     case 3:
                         if (gTextPrinters[i].callback != 0)
                             gTextPrinters[i].callback(&gTextPrinters[i].subPrinter, temp);
-                        break;
+                        return;
                     case 1:
                         gTextPrinters[i].sub_union.sub.active = 0;
-                        break;
+                        return;
                 }
             }
+			else
+				numEmpty++;
         }
+
+		if(numEmpty == 0x20)
+			return;
     }
+	} while(isInstantText);
 }
 
 bool16 IsTextPrinterActive(u8 id)
@@ -1983,7 +1997,7 @@ bool16 TextPrinterWaitWithDownArrow(struct TextPrinter *textPrinter)
     else
     {
         TextPrinterDrawDownArrow(textPrinter);
-        if (gMain.newKeys & (A_BUTTON | B_BUTTON))
+        if ((gMain.heldKeys & (A_BUTTON | B_BUTTON) && CheckSpeedchoiceOption(INSTANTTEXT, ON) == TRUE) || gMain.newKeys & (A_BUTTON | B_BUTTON))
         {
             result = TRUE;
             PlaySE(5);
@@ -2001,8 +2015,8 @@ bool16 TextPrinterWait(struct TextPrinter *textPrinter)
     }
     else
     {
-        if (gMain.newKeys & (A_BUTTON | B_BUTTON))
-        {
+		if ((gMain.heldKeys & (A_BUTTON | B_BUTTON) && CheckSpeedchoiceOption(INSTANTTEXT, ON) == TRUE) || gMain.newKeys & (A_BUTTON | B_BUTTON))
+		{
             result = TRUE;
             PlaySE(5);
         }

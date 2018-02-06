@@ -39,6 +39,7 @@
 #include "task.h"
 #include "naming_screen.h"
 #include "battle_string_ids.h"
+#include "speedchoice.h"
 
 // variables
 
@@ -3513,6 +3514,53 @@ static void atk23_getexp(void)
                     }
                     else
                         gBattleStruct->expGetterBank = 0;
+
+                    if(CheckSpeedchoiceOption(BWEXP, ON) == TRUE)
+                    {
+                        u32 upperRatio;
+                        u32 lowerRatio;
+                        
+                        if (holdEffect == HOLD_EFFECT_EXP_SHARE)
+                            gBattleMoveDamage += gExpShareExp; // add exp share FIRST, other wise it wont transform
+
+                        if (gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+                            gBattleMoveDamage = (gBattleMoveDamage * 150) / 100; // x 1.5
+
+                        // step 2, calculate ratio
+                        upperRatio = ((gBattleMons[gBank1].level * 2) + 10);
+                        upperRatio *= upperRatio * Sqrt(upperRatio);
+                        lowerRatio = (gBattleMons[gBank1].level + gPlayerParty[gBattleStruct->expGetterId].level + 10);
+                        lowerRatio *= lowerRatio * Sqrt(lowerRatio);
+
+                        // step 3, calculate ratio product and multiply rest.
+                        gBattleMoveDamage = max(gBattleMoveDamage, gBattleMoveDamage * upperRatio / lowerRatio) + 1;
+                        if (IsTradedMon(&gPlayerParty[gBattleStruct->expGetterId]))
+                        {
+                            gBattleMoveDamage = (gBattleMoveDamage * 150) / 100; // x 1.5
+                            i = 0x14A;
+                        }
+                        else
+                            i = 0x149;
+                        if (holdEffect == HOLD_EFFECT_LUCKY_EGG)
+                            gBattleMoveDamage = (gBattleMoveDamage * 150) / 100; // x 1.5
+                    }
+                    else // normal handling
+                    {
+                        if (holdEffect == HOLD_EFFECT_EXP_SHARE)
+                            gBattleMoveDamage += gExpShareExp;
+                        if (holdEffect == HOLD_EFFECT_LUCKY_EGG)
+                            gBattleMoveDamage = (gBattleMoveDamage * 150) / 100;
+                        if (gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+                            gBattleMoveDamage = (gBattleMoveDamage * 150) / 100;
+
+                        if (IsTradedMon(&gPlayerParty[gBattleStruct->expGetterId]))
+                        {
+                            gBattleMoveDamage = (gBattleMoveDamage * 150) / 100;
+                            i = 0x14A;
+                        }
+                        else
+                            i = 0x149;
+                    }
 
                     PREPARE_MON_NICK_WITH_PREFIX_BUFFER(gBattleTextBuff1, gBattleStruct->expGetterBank, gBattleStruct->expGetterId)
 

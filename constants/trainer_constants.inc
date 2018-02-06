@@ -853,6 +853,7 @@
 	.set TRAINER_LEAF,            852
 	.set TRAINER_BRENDAN_16,      853
 	.set TRAINER_MAY_16,          854
+	.set TRAINER_ROXANNE_NERFED,  855
 
 	.set TRAINER_PIC_HIKER,                  0
 	.set TRAINER_PIC_AQUA_GRUNT_M,           1

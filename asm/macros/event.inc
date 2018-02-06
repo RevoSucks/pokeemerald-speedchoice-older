@@ -1507,6 +1507,12 @@
 	.2byte \quantity
 	.endm
 
+	@ check speedchoice option
+	.macro checkspeedchoice option, setting
+	.byte 0xe3
+	.byte \option
+	.byte \setting
+	.endm
 
 @ Supplementary
 

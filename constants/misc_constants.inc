@@ -23,3 +23,32 @@
 
 	.set OBJ_IMAGE_ANIM_H_FLIP, 1 << 6
 	.set OBJ_IMAGE_ANIM_V_FLIP, 1 << 7
+
+	.equiv SPD_YES, 0
+	.equiv SPD_NO, 1
+	
+	.equiv SPD_ON, 0
+	.equiv SPD_OFF, 1
+	
+	.equiv SPD_NERF, 0
+	.equiv SPD_KEEP, 1
+	.equiv SPD_HELL, 2
+	
+	.equiv SPD_SEMI, 0
+
+	.equiv SPD_FULL, 2
+
+	.set BWEXP, 0
+	.set PLOTLESS, 1
+	.set INSTANTTEXT, 2
+	.set SPINNERS, 3
+	.set MAXVISION, 4
+	.set NERFROXANNE, 5
+	.set SUPERBIKE, 6
+	.set NEWWILDENC, 7
+	.set EARLYFLY, 8
+	.set RUN_EVERYWHERE, 9
+	.set MEME_ISLAND, 10
+	.set BETTER_MARTS, 11
+	.set GOOD_EARLY_WILDS, 12
+	.set EARLYSURF, 13

@@ -2,7 +2,7 @@
 #define GUARD_SPEEDCHOICE_H
 
 // global speedchoice config
-#define CURRENT_OPTIONS_NUM 15
+#define CURRENT_OPTIONS_NUM 14
 #define MAX_CHOICES 6
 #define OPTIONS_PER_PAGE 5
 #define ALLOPTIONS_PER_PAGE OPTIONS_PER_PAGE + 2 // page + start game
@@ -38,7 +38,6 @@ enum
     EARLYFLY,
     RUN_EVERYWHERE,
     MEME_ISLAND,
-    EASYFRONTIER,
     BETTER_MARTS,
     GOOD_EARLY_WILDS,
     EARLYSURF,

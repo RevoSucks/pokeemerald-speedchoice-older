@@ -856,6 +856,7 @@
 #define TRAINER_LEAF            852
 #define TRAINER_BRENDAN_16      853
 #define TRAINER_MAY_16          854
+#define TRAINER_ROXANNE_NERFED  855
 
 #define NO_OF_TRAINERS          854
 

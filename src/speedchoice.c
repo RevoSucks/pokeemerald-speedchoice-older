@@ -99,24 +99,23 @@ const u8 gSpeedchoiceTextRand[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}RAND");
 const u8 gSpeedchoiceTextSane[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SANE");
 
 // PAGE 1
-const u8 gSpeedchoiceOptionBWExp[] = _("{COLOR RED}{SHADOW LIGHT_RED}B/W EXP");
+const u8 gSpeedchoiceOptionBWExp[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}B/W EXP");
 const u8 gSpeedchoiceOptionPlotless[] = _("{COLOR RED}{SHADOW LIGHT_RED}PLOTLESS");
 const u8 gSpeedchoiceOptionInstantText[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}INSTANT TEXT");
 const u8 gSpeedchoiceOptionSpinners[] = _("{COLOR RED}{SHADOW LIGHT_RED}SPINNERS");
-const u8 gSpeedchoiceOptionMaxVision[] = _("{COLOR RED}{SHADOW LIGHT_RED}MAX VISION");
+const u8 gSpeedchoiceOptionMaxVision[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}MAX VISION");
 
 // PAGE 2
-const u8 gSpeedchoiceOptionNerfRoxanne[] = _("{COLOR RED}{SHADOW LIGHT_RED}NERF ROXANNE");
-const u8 gSpeedchoiceOptionSuperBike[] = _("{COLOR RED}{SHADOW LIGHT_RED}SUPER BIKE");
-const u8 gSpeedchoiceOptionNewWildEnc[] = _("{COLOR RED}{SHADOW LIGHT_RED}NEW WILD ENC.");
+const u8 gSpeedchoiceOptionNerfRoxanne[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}NERF ROXANNE");
+const u8 gSpeedchoiceOptionSuperBike[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SUPER BIKE");
+const u8 gSpeedchoiceOptionNewWildEnc[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}NEW WILD ENC.");
 const u8 gSpeedchoiceOptionEarlyFly[] = _("{COLOR RED}{SHADOW LIGHT_RED}EARLY FLY");
-const u8 gSpeedchoiceOptionRunEverywhere[] = _("{COLOR RED}{SHADOW LIGHT_RED}RUN EVERYWHERE");
+const u8 gSpeedchoiceOptionRunEverywhere[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}RUN EVERYWHERE");
 
 // PAGE 3
-const u8 gSpeedchoiceOptionMemeIsland[] = _("{COLOR RED}{SHADOW LIGHT_RED}MEME ISLAND");
-const u8 gSpeedchoiceOptionEasyFrontier[] = _("{COLOR RED}E{SHADOW LIGHT_RED}ASY FRONTIER");
-const u8 gSpeedchoiceOptionBetterMarts[] = _("{COLOR RED}{SHADOW LIGHT_RED}BETTER MARTS");
-const u8 gSpeedchoiceOptionGoodEarlyWilds[] = _("{COLOR RED}{SHADOW LIGHT_RED}GOOD EARLY WILDS");
+const u8 gSpeedchoiceOptionMemeIsland[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}MEME ISLAND");
+const u8 gSpeedchoiceOptionBetterMarts[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}BETTER MARTS");
+const u8 gSpeedchoiceOptionGoodEarlyWilds[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}GOOD EARLY WILDS");
 const u8 gSpeedchoiceOptionEarlySurf[] = _("{COLOR RED}{SHADOW LIGHT_RED}EARLY SURF");
 
 // CONSTANT OPTIONS
@@ -139,7 +138,6 @@ const u8 gSpeedchoiceTooltipNewWildEnc[] = _("Intended to be used with\nthe rand
 const u8 gSpeedchoiceTooltipEarlyFly[] = _("Recieve HM02 instead of\nItemfinder at Rival 2.\pAllows use of Fly without use of\nGym 6’s badge.");
 const u8 gSpeedchoiceTooltipRunEverywhere[] = _("Allows the Running Shoes to\nbe used anywhere, including\pinside of houses.\pAlso allows bike in most places.");
 const u8 gSpeedchoiceTooltipMemeIsland[] = _("Mirage Island always appears.");
-const u8 gSpeedchoiceTooltipEasyFrontier[] = _("Sets Battle Frontier symbol\nrequirements to be 3 and 5\pfor Silver and Gold\nrespectively.");
 const u8 gSpeedchoiceTooltipGlitchRod[] = _("Restores the old behavior\nof fishing from BETA 7 where\plevel is not accounted for\nby the rod type.");
 const u8 gSpeedchoiceTooltipBetterMarts[] = _("Improves the item selections\nof many Pokemon marts.\pAdds repels to Oldale Mart.\pAdds repels and super repels to\nMauville Mart.\pAdds X Specials to Rustboro\nMart.");
 const u8 gSpeedchoiceTooltipGoodEarlyWilds[] = _("SAME: Depending on the\nrandomizer check value, wild\pencounters in the grass for\npokemon below lv 10 will have\ptheir final evolution.\pRAND: If they have a branching\nevolution, it will be randomly\pgenerated instead of being static.");
@@ -235,21 +233,20 @@ const struct OptionChoiceConfig Arrows[MAX_CHOICES] =
 
 const struct SpeedchoiceOption SpeedchoiceOptions[CURRENT_OPTIONS_NUM + 1] = // plus one for page.
 {
-    { 2, NORMAL, (u8 *)&gSpeedchoiceOptionBWExp, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipBWEXP, OFF, FALSE },
-    { 3, NORMAL, (u8 *)&gSpeedchoiceOptionPlotless, (struct OptionChoiceConfig *)OptionChoiceConfigSemiFull, (u8 *)&gSpeedchoiceTooltipPlotless, KEEP, FALSE },
-    { 2, NORMAL, (u8 *)&gSpeedchoiceOptionInstantText, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipInstantText, OFF, TRUE },
-    { 3, NORMAL, (u8 *)&gSpeedchoiceOptionSpinners, (struct OptionChoiceConfig *)OptionChoiceConfigNerfKeep, (u8 *)&gSpeedchoiceTooltipSpinners, KEEP, FALSE },
-    { 3, NORMAL, (u8 *)&gSpeedchoiceOptionMaxVision, (struct OptionChoiceConfig *)OptionChoiceConfigSaneHell, (u8 *)&gSpeedchoiceTooltipMaxVision, OFF_2, FALSE },
-    { 2, NORMAL, (u8 *)&gSpeedchoiceOptionNerfRoxanne, (struct OptionChoiceConfig *)OptionChoiceConfigYesNo, (u8 *)&gSpeedchoiceTooltipNerfRoxanne, OFF, FALSE },
-    { 2, NORMAL, (u8 *)&gSpeedchoiceOptionSuperBike, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipSuperBike, OFF, FALSE },
-    { 2, NORMAL, (u8 *)&gSpeedchoiceOptionNewWildEnc, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipNewWildEnc, OFF, FALSE },
-    { 2, NORMAL, (u8 *)&gSpeedchoiceOptionEarlyFly, (struct OptionChoiceConfig *)OptionChoiceConfigYesNo, (u8 *)&gSpeedchoiceTooltipEarlyFly, NO, FALSE },
-    { 2, NORMAL, (u8 *)&gSpeedchoiceOptionRunEverywhere, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipRunEverywhere, OFF, FALSE },
-    { 2, NORMAL, (u8 *)&gSpeedchoiceOptionMemeIsland, (struct OptionChoiceConfig *)OptionChoiceConfigYesNo, (u8 *)&gSpeedchoiceTooltipMemeIsland, NO, FALSE },
-    { 2, NORMAL, (u8 *)&gSpeedchoiceOptionEasyFrontier, (struct OptionChoiceConfig *)OptionChoiceConfigYesNo, (u8 *)&gSpeedchoiceTooltipEasyFrontier, NO, FALSE },
-    { 2, NORMAL, (u8 *)&gSpeedchoiceOptionBetterMarts, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipBetterMarts, OFF, FALSE },
-    { 3, NORMAL, (u8 *)&gSpeedchoiceOptionGoodEarlyWilds, (struct OptionChoiceConfig *)OptionChoiceConfigOffRand, (u8 *)&gSpeedchoiceTooltipGoodEarlyWilds, OFF, FALSE },
-    { 2, NORMAL, (u8 *)&gSpeedchoiceOptionEarlySurf, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipEarlySurf, OFF, FALSE },
+    { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionBWExp, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipBWEXP, OFF, TRUE },
+    { 3,         NORMAL, (u8 *)&gSpeedchoiceOptionPlotless, (struct OptionChoiceConfig *)OptionChoiceConfigSemiFull, (u8 *)&gSpeedchoiceTooltipPlotless, KEEP, FALSE },
+    { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionInstantText, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipInstantText, OFF, TRUE },
+    { 3,         NORMAL, (u8 *)&gSpeedchoiceOptionSpinners, (struct OptionChoiceConfig *)OptionChoiceConfigNerfKeep, (u8 *)&gSpeedchoiceTooltipSpinners, KEEP, FALSE },
+    { 3,         NORMAL, (u8 *)&gSpeedchoiceOptionMaxVision, (struct OptionChoiceConfig *)OptionChoiceConfigSaneHell, (u8 *)&gSpeedchoiceTooltipMaxVision, OFF_2, TRUE },
+    { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionNerfRoxanne, (struct OptionChoiceConfig *)OptionChoiceConfigYesNo, (u8 *)&gSpeedchoiceTooltipNerfRoxanne, OFF, TRUE },
+    { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionSuperBike, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipSuperBike, OFF, TRUE },
+    { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionNewWildEnc, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipNewWildEnc, OFF, TRUE },
+    { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionEarlyFly, (struct OptionChoiceConfig *)OptionChoiceConfigYesNo, (u8 *)&gSpeedchoiceTooltipEarlyFly, NO, FALSE },
+    { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionRunEverywhere, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipRunEverywhere, OFF, TRUE },
+    { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionMemeIsland, (struct OptionChoiceConfig *)OptionChoiceConfigYesNo, (u8 *)&gSpeedchoiceTooltipMemeIsland, NO, TRUE },
+    { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionBetterMarts, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipBetterMarts, OFF, TRUE },
+    { 3,         NORMAL, (u8 *)&gSpeedchoiceOptionGoodEarlyWilds, (struct OptionChoiceConfig *)OptionChoiceConfigOffRand, (u8 *)&gSpeedchoiceTooltipGoodEarlyWilds, OFF_2, TRUE },
+    { 2,         NORMAL, (u8 *)&gSpeedchoiceOptionEarlySurf, (struct OptionChoiceConfig *)OptionChoiceConfigOnOff, (u8 *)&gSpeedchoiceTooltipEarlySurf, OFF, FALSE },
     { MAX_PAGES, NORMAL, (u8 *)&gSpeedchoiceOptionPage, (struct OptionChoiceConfig *)OptionChoiceConfigPage, NULL, 1, TRUE } // see above comment.
 };
 
@@ -295,7 +292,6 @@ void InitializeOptionChoicesAndConfig(u8 taskId)
     gSaveBlock2Ptr->speedchoiceConfig.earlyfly = SpeedchoiceOptions[EARLYFLY].defaultOption;
     gSaveBlock2Ptr->speedchoiceConfig.runEverywhere = SpeedchoiceOptions[RUN_EVERYWHERE].defaultOption;
     gSaveBlock2Ptr->speedchoiceConfig.memeIsland = SpeedchoiceOptions[MEME_ISLAND].defaultOption;
-    gSaveBlock2Ptr->speedchoiceConfig.easyfrontier = SpeedchoiceOptions[EASYFRONTIER].defaultOption;
     gSaveBlock2Ptr->speedchoiceConfig.betterMarts = SpeedchoiceOptions[BETTER_MARTS].defaultOption;
     gSaveBlock2Ptr->speedchoiceConfig.goodEarlyWilds = SpeedchoiceOptions[GOOD_EARLY_WILDS].defaultOption;
     gSaveBlock2Ptr->speedchoiceConfig.earlysurf = SpeedchoiceOptions[EARLYSURF].defaultOption;
@@ -327,8 +323,6 @@ bool8 CheckSpeedchoiceOption(u8 option, u8 selection)
             return gSaveBlock2Ptr->speedchoiceConfig.runEverywhere == selection;
         case MEME_ISLAND:
             return gSaveBlock2Ptr->speedchoiceConfig.memeIsland == selection;
-        case EASYFRONTIER:
-            return gSaveBlock2Ptr->speedchoiceConfig.easyfrontier == selection;
         case BETTER_MARTS:
             return gSaveBlock2Ptr->speedchoiceConfig.betterMarts == selection;
         case GOOD_EARLY_WILDS:
@@ -794,7 +788,6 @@ static void SaveSpeedchoiceOptions(u8 taskId)
     gSaveBlock2Ptr->speedchoiceConfig.earlyfly = gLocalSpeedchoiceConfig.optionConfig[EARLYFLY];
     gSaveBlock2Ptr->speedchoiceConfig.runEverywhere = gLocalSpeedchoiceConfig.optionConfig[RUN_EVERYWHERE];
     gSaveBlock2Ptr->speedchoiceConfig.memeIsland = gLocalSpeedchoiceConfig.optionConfig[MEME_ISLAND];
-    gSaveBlock2Ptr->speedchoiceConfig.easyfrontier = gLocalSpeedchoiceConfig.optionConfig[EASYFRONTIER];
     gSaveBlock2Ptr->speedchoiceConfig.betterMarts = gLocalSpeedchoiceConfig.optionConfig[BETTER_MARTS];
     gSaveBlock2Ptr->speedchoiceConfig.goodEarlyWilds = gLocalSpeedchoiceConfig.optionConfig[GOOD_EARLY_WILDS];
     gSaveBlock2Ptr->speedchoiceConfig.earlysurf = gLocalSpeedchoiceConfig.optionConfig[EARLYSURF];

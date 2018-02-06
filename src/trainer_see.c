@@ -13,6 +13,7 @@
 #include "script.h"
 #include "event_data.h"
 #include "script_movement.h"
+#include "speedchoice.h"
 
 extern bool8 InBattlePyramid(void);
 extern bool32 InTrainerHill(void);
@@ -303,6 +304,9 @@ static u8 GetTrainerApproachDistance(struct MapObject *trainerObj)
 // Returns how far south the player is from trainer. 0 if out of trainer's sight.
 static u8 GetTrainerApproachDistanceSouth(struct MapObject *trainerObj, s16 range, s16 x, s16 y)
 {
+    if(CheckSpeedchoiceOption(MAXVISION, OFF_2) == FALSE)
+		range = MAX_VISION_RANGE;
+
     if (trainerObj->coords2.x == x
      && y > trainerObj->coords2.y
      && y <= trainerObj->coords2.y + range)
@@ -314,6 +318,9 @@ static u8 GetTrainerApproachDistanceSouth(struct MapObject *trainerObj, s16 rang
 // Returns how far north the player is from trainer. 0 if out of trainer's sight.
 static u8 GetTrainerApproachDistanceNorth(struct MapObject *trainerObj, s16 range, s16 x, s16 y)
 {
+    if(CheckSpeedchoiceOption(MAXVISION, OFF_2) == FALSE)
+		range = MAX_VISION_RANGE;
+
     if (trainerObj->coords2.x == x
      && y < trainerObj->coords2.y
      && y >= trainerObj->coords2.y - range)
@@ -325,6 +332,9 @@ static u8 GetTrainerApproachDistanceNorth(struct MapObject *trainerObj, s16 rang
 // Returns how far west the player is from trainer. 0 if out of trainer's sight.
 static u8 GetTrainerApproachDistanceWest(struct MapObject *trainerObj, s16 range, s16 x, s16 y)
 {
+    if(CheckSpeedchoiceOption(MAXVISION, OFF_2) == FALSE)
+		range = MAX_VISION_RANGE;
+
     if (trainerObj->coords2.y == y
      && x < trainerObj->coords2.x
      && x >= trainerObj->coords2.x - range)
@@ -336,6 +346,9 @@ static u8 GetTrainerApproachDistanceWest(struct MapObject *trainerObj, s16 range
 // Returns how far east the player is from trainer. 0 if out of trainer's sight.
 static u8 GetTrainerApproachDistanceEast(struct MapObject *trainerObj, s16 range, s16 x, s16 y)
 {
+    if(CheckSpeedchoiceOption(MAXVISION, OFF_2) == FALSE)
+		range = MAX_VISION_RANGE;
+
     if (trainerObj->coords2.y == y
      && x > trainerObj->coords2.x
      && x <= trainerObj->coords2.x + range)
@@ -364,8 +377,11 @@ static u8 CheckPathBetweenTrainerAndPlayer(struct MapObject *trainerObj, u8 appr
     for (i = 0; i < approachDistance - 1; i++, MoveCoords(direction, &x, &y))
     {
         collision = sub_8092C8C(trainerObj, x, y, direction);
-        if (collision != 0 && (collision & COLLISION_MASK))
-            return 0;
+
+		if(CheckSpeedchoiceOption(MAXVISION, SANE) == TRUE && (collision && (collision & ~COLLISION_MASK)))
+            return FALSE;
+		else if(CheckSpeedchoiceOption(MAXVISION, OFF_2) == TRUE && (collision && (collision & COLLISION_MASK))) // normal handling
+			return FALSE;
     }
 
     // preserve mapobj_unk_19 before clearing.
@@ -378,7 +394,7 @@ static u8 CheckPathBetweenTrainerAndPlayer(struct MapObject *trainerObj, u8 appr
 
     trainerObj->range.as_nybbles.x = unk19_temp;
     trainerObj->range.as_nybbles.y = unk19b_temp;
-    if (collision == 4)
+    if (collision == 4 || CheckSpeedchoiceOption(MAXVISION, HELL) == TRUE)
         return approachDistance;
 
     return 0;

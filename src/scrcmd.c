@@ -51,6 +51,7 @@
 #include "trainer_see.h"
 #include "tv.h"
 #include "window.h"
+#include "speedchoice.h"
 
 typedef u16 (*SpecialFunc)(void);
 typedef void (*NativeFunc)(void);
@@ -1332,6 +1333,10 @@ bool8 ScrCmd_closemessage(struct ScriptContext *ctx)
 
 static bool8 WaitForAorBPress(void)
 {
+	if (CheckSpeedchoiceOption(INSTANTTEXT, YES) == TRUE)
+		if(gMain.heldKeys & (B_BUTTON))
+			return TRUE;
+
     if (gMain.newKeys & A_BUTTON)
         return TRUE;
     if (gMain.newKeys & B_BUTTON)
@@ -2449,4 +2454,13 @@ bool8 ScrCmd_warpE0(struct ScriptContext *ctx)
 	sub_80AF79C();
     player_avatar_init_params_reset();
     return TRUE;
+}
+
+bool8 Scrcmd_checkspeedchoice(struct ScriptContext *ctx)
+{
+	u8 option = ScriptReadByte(ctx);
+	u8 setting = ScriptReadByte(ctx);
+
+	ctx->comparisonResult = CheckSpeedchoiceOption(option, setting);
+	return TRUE;
 }

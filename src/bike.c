@@ -9,6 +9,7 @@
 #include "overworld.h"
 #include "constants/songs.h"
 #include "sound.h"
+#include "speedchoice.h"
 
 extern bool8 gBikeCyclingChallenge;
 extern u8 gBikeCollisions;
@@ -139,6 +140,18 @@ static const struct BikeHistoryInputInfo sAcroBikeTricksList[] =
 // code
 void MovePlayerOnBike(u8 direction, u16 newKeys, u16 heldKeys)
 {
+    if(CheckSpeedchoiceOption(SUPERBIKE, ON) == TRUE)
+    {
+        if(gMain.newKeys & R_BUTTON)
+        {
+            PlaySE(SE_JITENSYA);
+            if(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_ACRO_BIKE)
+                SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_MACH_BIKE);
+            else
+                SetPlayerAvatarTransitionFlags(PLAYER_AVATAR_FLAG_ACRO_BIKE);
+        }
+    }
+
     if (gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_MACH_BIKE)
         MovePlayerOnMachBike(direction, newKeys, heldKeys);
     else
@@ -1071,6 +1084,8 @@ void Bike_HandleBumpySlopeJump(void)
 
 bool32 IsRunningDisallowed(u8 metatile)
 {
+	if(CheckSpeedchoiceOption(RUN_EVERYWHERE, YES) == TRUE)
+        return FALSE;
     if (!(gMapHeader.flags & 4) || IsRunningDisallowedByMetatile(metatile) == TRUE)
         return TRUE;
     else

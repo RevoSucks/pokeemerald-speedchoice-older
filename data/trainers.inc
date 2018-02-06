@@ -10259,3 +10259,15 @@ gTrainers:: @ 8310030
 	.4byte 0x0 @ AI flags
 	.4byte 1 @ party size
 	.4byte gTrainerParty_May16
+
+@ ROXANNE_NERFED
+	.byte F_TRAINER_PARTY_HELD_ITEM | F_TRAINER_PARTY_CUSTOM_MOVESET @ party type flags
+	.byte TRAINER_CLASS_NAME_LEADER
+	.byte F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_FEMALE @ gender flag and encounter music
+	.byte TRAINER_PIC_LEADER_ROXANNE
+	.string "ROXANNE$", 12
+	.2byte ITEM_NONE, ITEM_NONE, ITEM_NONE, ITEM_NONE @ items
+	.4byte FALSE @ is double battle
+	.4byte 0x7 @ AI flags
+	.4byte 3 @ party size
+	.4byte gTrainerParty_Roxanne1

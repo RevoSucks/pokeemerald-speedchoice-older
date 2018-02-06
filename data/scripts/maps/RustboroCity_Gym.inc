@@ -2,7 +2,18 @@ RustboroCity_Gym_MapScripts:: @ 8212F30
 	.byte 0
 
 RustboroCity_Gym_EventScript_212F31:: @ 8212F31
-	trainerbattle 1, TRAINER_ROXANNE_1, 0, RustboroCity_Gym_Text_21362A, RustboroCity_Gym_Text_21370B, RustboroCity_Gym_EventScript_212F66
+	checkspeedchoice NERFROXANNE, SPD_YES
+	goto_if TRUE, RustboroCity_Gym_NerfedRoxanne
+	goto RustboroCity_Gym_NormalRoxanne
+
+RustboroCity_Gym_NerfedRoxanne::
+trainerbattle 1, TRAINER_ROXANNE_NERFED, 0, RustboroCity_Gym_Text_21362A, RustboroCity_Gym_Text_21370B, RustboroCity_Gym_EventScript_212F66
+goto RustboroCity_Gym_AfterRoxanne
+
+RustboroCity_Gym_NormalRoxanne::
+trainerbattle 1, TRAINER_ROXANNE_1, 0, RustboroCity_Gym_Text_21362A, RustboroCity_Gym_Text_21370B, RustboroCity_Gym_EventScript_212F66
+
+RustboroCity_Gym_AfterRoxanne::	
 	specialvar VAR_RESULT, ShouldTryRematchBattle
 	compare VAR_RESULT, 1
 	goto_eq RustboroCity_Gym_EventScript_212FC8

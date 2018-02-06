@@ -962,11 +962,22 @@ void sub_80FE03C(u8 taskId)
     SetUpItemUseCallback(taskId);
 }
 
+extern bool8 sUsedEscapeOption;
+
 void sub_80FE058(void)
 {
-    RemoveBagItem(gSpecialVar_ItemId, 1);
-    CopyItemName(gSpecialVar_ItemId, gStringVar2);
-    StringExpandPlaceholders(gStringVar4, gText_PlayerUsedVar2);
+	if(sUsedEscapeOption == TRUE)
+	{
+		CopyItemName(ITEM_ESCAPE_ROPE, gStringVar2);
+		StringExpandPlaceholders(gStringVar4, gOtherText_UsedItem);
+	}
+	else
+	{
+		RemoveBagItem(gSpecialVar_ItemId, 1);
+		CopyItemName(gSpecialVar_ItemId, gStringVar2);
+		StringExpandPlaceholders(gStringVar4, gText_PlayerUsedVar2);
+	}
+	sUsedEscapeOption = FALSE;
     if (!InBattlePyramid())
     {
         sub_81AB9A8(ItemId_GetPocket(gSpecialVar_ItemId));
