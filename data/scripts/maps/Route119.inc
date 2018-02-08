@@ -133,13 +133,21 @@ Route119_EventScript_1F45D4:: @ 81F45D4
 
 Route119_EventScript_1F45E4:: @ 81F45E4
 	msgbox Route119_Text_1F4D4B, 4
-	call Route119_EventScript_1F45FF
+	checkspeedchoice EARLYFLY, SPD_YES
+	call_if TRUE, Speedchoice_GiveItemfinder
+	checkspeedchoice EARLYFLY, SPD_NO
+	call_if TRUE, Route119_EventScript_1F45FF @ im still not sure if there's a better way to do this than a double check. i cannot be sure that the callif instructions don't modify callif conditional.
 	msgbox Route119_Text_1F4DB5, 4
 	goto Route119_EventScript_1F460F
 	end
 
 Route119_EventScript_1F45FF:: @ 81F45FF
 	giveitem_std ITEM_HM02
+	setflag FLAG_0x06E
+	return
+
+Speedchoice_GiveItemfinder::
+	giveitem_std ITEM_ITEMFINDER
 	setflag FLAG_0x06E
 	return
 

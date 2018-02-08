@@ -1443,6 +1443,7 @@
 #define FLAG_0x8E1                      (SYSTEM_FLAGS + 0x81)
 #define FLAG_LANDMARK_TRAINER_HILL      (SYSTEM_FLAGS + 0x82)
 
+// these flags are free.
 #define FLAG_0x8E3               (SYSTEM_FLAGS + 0x83)
 #define FLAG_0x8E4               (SYSTEM_FLAGS + 0x84)
 #define FLAG_0x8E5               (SYSTEM_FLAGS + 0x85)

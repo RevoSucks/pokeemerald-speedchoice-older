@@ -3167,13 +3167,6 @@ bool8 sub_8090D90 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = GetRunningPastFacingDirection(mapObject, RUNFOLLOW_ANY);
     if (direction == 0)
     {
-	u8 newDirections[4];
-	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
-    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
-        direction = newDirections[Random() % 4];
-    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
-        direction = GetNextDirection(mapObject, sprite);
-    else
         direction = directions[mapObject->mapobj_unk_18];
     }
     FieldObjectSetDirection(mapObject, direction);
@@ -3242,13 +3235,6 @@ bool8 sub_8090F30 (struct MapObject *mapObject, struct Sprite *sprite)
     direction = gUnknown_085055CD[mapObject->animPattern];
     if (mapObject->mapobj_unk_21)
     {
-	u8 newDirections[4];
-	memcpy(newDirections, gUnknown_0850D710, sizeof newDirections);
-    if(CheckSpeedchoiceOption(SPINNERS, HELL) == TRUE)
-        direction = newDirections[Random() % 4];
-    else if(CheckSpeedchoiceOption(SPINNERS, PURGE) == TRUE)
-        direction = GetNextDirection(mapObject, sprite);
-    else
         direction = GetOppositeDirection(direction);
     }
     FieldObjectSetDirection(mapObject, direction);

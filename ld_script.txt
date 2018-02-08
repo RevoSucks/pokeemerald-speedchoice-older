@@ -104,6 +104,8 @@ SECTIONS {
         src/script.o(.text);
         src/scrcmd.o(.text);
         asm/field_control_avatar.o(.text);
+        src/field_control_avatar.o(.text);
+        asm/field_control_avatar.o(.text_fieldmove);
         src/event_data.o(.text);
         src/coord_event_weather.o(.text);
         asm/field_tasks.o(.text);
@@ -257,6 +259,8 @@ SECTIONS {
         src/save_location.o(.text);
         asm/item_icon.o(.text);
         asm/party_menu.o(.text);
+        src/party_menu.o(.text);
+        asm/party_menu.o(.text_menusplit);
         asm/battle_tent.o(.text);
         src/unk_text_util_2.o(.text);
         src/multiboot.o(.text);

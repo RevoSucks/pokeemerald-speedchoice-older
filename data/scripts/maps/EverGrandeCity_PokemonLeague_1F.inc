@@ -60,6 +60,8 @@ EverGrandeCity_PokemonLeague_1F_EventScript_229636:: @ 8229636
 	delay 120
 	checkflag FLAG_BADGE06_GET
 	goto_if 0, EverGrandeCity_PokemonLeague_1F_EventScript_2296AE
+	checkflag FLAG_BADGE07_GET
+	goto_if 0, EverGrandeCity_PokemonLeague_1F_EventScript_2296AE
 	closemessage
 	applymovement 3, EverGrandeCity_PokemonLeague_1F_Movement_2296E2
 	applymovement 4, EverGrandeCity_PokemonLeague_1F_Movement_2296E5

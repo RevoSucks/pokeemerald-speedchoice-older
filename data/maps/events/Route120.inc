@@ -43,6 +43,7 @@ Route120_MapObjects: @ 852B3F8
 	object_event 42, MAP_OBJ_GFX_GIRL_3, 0, 0, 19, 32, 3, 7, 17, 0, 1, 3, Route120_EventScript_1F5981, 0, 0, 0
 	object_event 43, MAP_OBJ_GFX_MAN_4, 0, 0, 14, 34, 3, 10, 17, 0, 1, 3, Route120_EventScript_1F596A, 0, 0, 0
 	object_event 44, MAP_OBJ_GFX_ITEM_BALL, 0, 0, 24, 33, 3, 1, 17, 0, 0, 0, Route120_EventScript_290F7C, 1148, 0, 0
+	object_event 45, MAP_OBJ_GFX_KECLEON_1, 0, 0, 12, 15, 4, 76, 17, 0, 0, 0, Route120_EventScript_1F57BC, 2399, 0, 0
 
 Route120_MapWarps: @ 852B818
 	warp_def 7, 55, 0, 0, ANCIENT_TOMB

@@ -63,8 +63,15 @@ RusturfTunnel_EventScript_22CEAE:: @ 822CEAE
 	call_if 1, RusturfTunnel_EventScript_22CFC8
 	compare VAR_0x4001, 3
 	call_if 1, RusturfTunnel_EventScript_22CFC8
+	checkspeedchoice EARLYSURF, SPD_YES
+	goto_if TRUE, Speedchoice_EarlySurf2
 	giveitem_std ITEM_HM04
 	setflag FLAG_0x06A
+	goto AfterEarlySurf2
+Speedchoice_EarlySurf2::
+	giveitem_std ITEM_HM03
+	setflag FLAG_0x07A
+AfterEarlySurf2::
 	msgbox RusturfTunnel_Text_22D6D2, 4
 	closemessage
 	compare VAR_0x4001, 1

@@ -245,6 +245,8 @@ Route120_EventScript_1F572C:: @ 81F572C
 	msgbox Route120_Text_1F5BAF, 4
 	giveitem_std ITEM_DEVON_SCOPE
 	setflag FLAG_0x11D
+	removeobject 45 @ Extra Kecleon
+	setflag 2399 @ Extra Kecleon
 	msgbox Route120_Text_1F5C7B, 4
 	closemessage
 	applymovement 31, Route120_Movement_2725AA

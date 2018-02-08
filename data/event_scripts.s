@@ -1227,6 +1227,7 @@ EventScript_2715DE:: @ 82715DE
 	setflag FLAG_0x319
 	setflag FLAG_0x357
 	setflag FLAG_0x050
+	setflag FLAG_0x3CC @ Steven object after Fortree for Speedchoice
 	call EventScript_27149D
 	end
 

@@ -421,6 +421,7 @@ PetalburgCity_Gym_EventScript_204E3B:: @ 8204E3B
 	setflag FLAG_0x4F4
 	setvar VAR_0x4085, 7
 	setflag FLAG_BADGE05_GET
+	clearflag FLAG_0x3CC @ Steven object after Fortree for Speedchoice
 	special sub_813B9A0
 	call PetalburgCity_Gym_EventScript_2721F8
 	setflag FLAG_0x391

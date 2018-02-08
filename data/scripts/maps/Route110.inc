@@ -479,13 +479,20 @@ Route110_EventScript_1EF8B4:: @ 81EF8B4
 
 Route110_EventScript_1EF8C4:: @ 81EF8C4
 	msgbox Route110_Text_1EFECD, 4
-	call Route110_EventScript_1EF8DF
+	checkspeedchoice EARLYFLY, SPD_YES
+	call_if TRUE, Speedchoice_GiveFly
+	checkspeedchoice EARLYFLY, SPD_NO
+	call_if TRUE, Route110_EventScript_1EF8DF
 	msgbox Route110_Text_1EFF1C, 4
 	goto Route110_EventScript_1EF8EC
 	end
 
 Route110_EventScript_1EF8DF:: @ 81EF8DF
 	giveitem_std ITEM_ITEMFINDER
+	return
+
+Speedchoice_GiveFly::
+	giveitem_std ITEM_HM02
 	return
 
 Route110_EventScript_1EF8EC:: @ 81EF8EC
