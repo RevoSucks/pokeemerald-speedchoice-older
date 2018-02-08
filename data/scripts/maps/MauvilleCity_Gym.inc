@@ -89,6 +89,27 @@ MauvilleCity_Gym_EventScript_20DEEB:: @ 820DEEB
 	end
 
 MauvilleCity_Gym_EventScript_20DF2B:: @ 820DF2B
+	checkspeedchoice PLOTLESS, SPD_KEEP
+	goto_if TRUE, WattsonAfter
+	checkspeedchoice PLOTLESS, SPD_SEMI
+	goto_if TRUE, WattsonAfter
+	setflag 819
+	setvar VAR_0x40BF, 1
+	setflag 938
+	setflag 244
+	setflag 926
+	setflag 927
+	setflag 139
+	clearflag 928
+	setflag 942
+	@ prevent weather institute from being required on Semi+Full and Early Surf since the player can surf there early. The other 3 instances of this were guards for older saves since I didn't feel like replaying the game for the 20th time.
+	checkspeedchoice PLOTLESS, SPD_KEEP @ seems weird checking for keep since it was checked earlier, but im actually just checking for SEMI or FULL.
+	goto_if TRUE, WattsonAfter
+	setvar VAR_0x40B3, 2
+	setflag 890
+	clearflag 892
+	setflag 893
+WattsonAfter::
 	message MauvilleCity_Gym_Text_20E77F
 	waitmessage
 	call MauvilleCity_Gym_EventScript_27207E

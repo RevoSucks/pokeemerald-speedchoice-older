@@ -91,7 +91,7 @@ static void OpponentHandleChooseMove(void);
 static void OpponentHandleChooseItem(void);
 static void OpponentHandleChoosePokemon(void);
 static void OpponentHandleCmd23(void);
-static void OpponentHandleHealthBarUpdate(void);
+void OpponentHandleHealthBarUpdate(void);
 static void OpponentHandleExpUpdate(void);
 static void OpponentHandleStatusIconUpdate(void);
 static void OpponentHandleStatusAnimation(void);
@@ -113,7 +113,7 @@ static void OpponentHandleCmd42(void);
 static void OpponentHandlePlaySE(void);
 static void OpponentHandlePlayFanfareOrBGM(void);
 static void OpponentHandleFaintingCry(void);
-static void OpponentHandleIntroSlide(void);
+void OpponentHandleIntroSlide(void);
 static void OpponentHandleIntroTrainerBallThrow(void);
 static void OpponentHandleDrawPartyStatusSummary(void);
 static void OpponentHandleCmd49(void);
@@ -411,7 +411,7 @@ static void sub_805F994(void)
     }
 }
 
-static void CompleteOnHealthbarDone(void)
+void CompleteOnHealthbarDone(void)
 {
     s16 hpValue = sub_8074AA0(gActiveBank, gHealthBoxesIds[gActiveBank], HEALTH_BAR, 0);
     SetHealthboxSpriteVisible(gHealthBoxesIds[gActiveBank]);
@@ -1686,7 +1686,7 @@ static void OpponentHandleCmd23(void)
     OpponentBufferExecCompleted();
 }
 
-static void OpponentHandleHealthBarUpdate(void)
+void OpponentHandleHealthBarUpdate(void)
 {
     s16 hpVal;
 
@@ -1863,7 +1863,7 @@ static void OpponentHandleFaintingCry(void)
     OpponentBufferExecCompleted();
 }
 
-static void OpponentHandleIntroSlide(void)
+void OpponentHandleIntroSlide(void)
 {
     HandleIntroSlide(gBattleBufferA[gActiveBank][1]);
     gUnknown_020243FC |= 1;

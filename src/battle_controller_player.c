@@ -110,7 +110,7 @@ static void PlayerHandleChooseMove(void);
 static void PlayerHandleChooseItem(void);
 static void PlayerHandleChoosePokemon(void);
 static void PlayerHandleCmd23(void);
-static void PlayerHandleHealthBarUpdate(void);
+void PlayerHandleHealthBarUpdate(void);
 static void PlayerHandleExpUpdate(void);
 static void PlayerHandleStatusIconUpdate(void);
 static void PlayerHandleStatusAnimation(void);
@@ -132,7 +132,7 @@ static void PlayerHandleCmd42(void);
 static void PlayerHandlePlaySE(void);
 static void PlayerHandlePlayFanfareOrBGM(void);
 static void PlayerHandleFaintingCry(void);
-static void PlayerHandleIntroSlide(void);
+void PlayerHandleIntroSlide(void);
 static void PlayerHandleIntroTrainerBallThrow(void);
 static void PlayerHandleDrawPartyStatusSummary(void);
 static void PlayerHandleCmd49(void);
@@ -1153,7 +1153,7 @@ void c3_0802FDF4(u8 taskId)
     }
 }
 
-static void CompleteOnHealthbarDone(void)
+void CompleteOnHealthbarDone2(void)
 {
     s16 hpValue = sub_8074AA0(gActiveBank, gHealthBoxesIds[gActiveBank], HEALTH_BAR, 0);
 
@@ -2715,7 +2715,7 @@ static void PlayerHandleCmd23(void)
     PlayerBufferExecCompleted();
 }
 
-static void PlayerHandleHealthBarUpdate(void)
+void PlayerHandleHealthBarUpdate(void)
 {
     s16 hpVal;
 
@@ -2740,7 +2740,7 @@ static void PlayerHandleHealthBarUpdate(void)
         UpdateHpTextInHealthbox(gHealthBoxesIds[gActiveBank], 0, HP_CURRENT);
     }
 
-    gBattleBankFunc[gActiveBank] = CompleteOnHealthbarDone;
+    gBattleBankFunc[gActiveBank] = CompleteOnHealthbarDone2;
 }
 
 static void PlayerHandleExpUpdate(void)
@@ -2950,7 +2950,7 @@ static void PlayerHandleFaintingCry(void)
     PlayerBufferExecCompleted();
 }
 
-static void PlayerHandleIntroSlide(void)
+void PlayerHandleIntroSlide(void)
 {
     HandleIntroSlide(gBattleBufferA[gActiveBank][1]);
     gUnknown_020243FC |= 1;

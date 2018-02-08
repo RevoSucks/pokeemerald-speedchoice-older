@@ -76,6 +76,14 @@ MtChimney_EventScript_22EE0B:: @ 822EE0B
 	clearflag FLAG_0x3A0
 	setflag FLAG_0x3AE
 	clearflag FLAG_0x3E2
+	@ we only need to do this for Semi, since the player can do gym 5 on Early Surf, and thus use the Weather Institute early.
+	checkspeedchoice PLOTLESS, SPD_SEMI
+	goto_if FALSE, AfterChimney
+	setvar VAR_0x40B3, 2
+	setflag 890
+	clearflag 892
+	setflag 893
+AfterChimney::
 	releaseall
 	end
 

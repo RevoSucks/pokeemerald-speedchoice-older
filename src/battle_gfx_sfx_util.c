@@ -369,6 +369,7 @@ void sub_805D7AC(struct Sprite *sprite)
     if (!(gUnknown_020243FC & 1))
     {
         sprite->pos2.x += sprite->data[0];
+		sprite->pos2.x += sprite->data[0] / 2; // x1.5 SPEEDCHOICE
         if (sprite->pos2.x == 0)
         {
             if (sprite->pos2.y != 0)

@@ -35,6 +35,8 @@ SkyPillar_Outside_MapScript2_2392FA: @ 82392FA
 	.2byte 0
 
 SkyPillar_Outside_EventScript_239304:: @ 8239304
+	checkspeedchoice PLOTLESS, SPD_KEEP
+	goto_if FALSE, AfterSkyPillar1
 	lockall
 	applymovement 1, SkyPillar_Outside_Movement_2393D3
 	waitmovement 0
@@ -89,6 +91,9 @@ SkyPillar_Outside_EventScript_239304:: @ 8239304
 	clearflag FLAG_0x330
 	fadescreenswapbuffers 0
 	releaseall
+	end
+	
+AfterSkyPillar1::
 	end
 
 SkyPillar_Outside_Movement_2393D3: @ 82393D3

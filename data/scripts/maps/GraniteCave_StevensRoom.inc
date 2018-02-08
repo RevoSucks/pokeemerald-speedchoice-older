@@ -33,6 +33,20 @@ GraniteCave_StevensRoom_EventScript_22DC7B:: @ 822DC7B
 	call_if 1, GraniteCave_StevensRoom_EventScript_22DD18
 	playse SE_KAIDAN
 	removeobject 1
+	checkspeedchoice PLOTLESS, SPD_KEEP
+	goto_if TRUE, StevenRoomEventEnd
+	checkspeedchoice PLOTLESS, SPD_SEMI
+	goto_if TRUE, StevenRoomEventEnd
+	setflag 148
+	setflag 882
+	setflag 883
+	setflag 887
+	setflag 900
+	setflag 149
+	clearflag 947
+	setflag 949
+	setvar VAR_0x40DA, 1 @ fix for no Birch on Route 110
+StevenRoomEventEnd::
 	release
 	end
 

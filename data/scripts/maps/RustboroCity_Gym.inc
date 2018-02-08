@@ -40,6 +40,41 @@ RustboroCity_Gym_EventScript_212F66:: @ 8212F66
 	end
 
 RustboroCity_Gym_EventScript_212FA4:: @ 8212FA4
+	checkspeedchoice PLOTLESS, SPD_KEEP
+	goto_if TRUE, RoxanneNoAqualess
+	checkspeedchoice PLOTLESS, SPD_SEMI
+	goto_if TRUE, RoxanneNoAqualess
+	giveitem_std ITEM_LETTER
+	@ give pokenav
+	message RustboroCity_DevonCorp_3F_Text_212820
+	waitfanfare
+	setflag FLAG_SYS_POKENAV_GET
+	setflag FLAG_0x0BC
+	setflag FLAG_0x3E7
+	setflag FLAG_HAS_MATCH_CALL
+	setflag FLAG_0x130 @ this might fix match call...
+	@ complete the pokenav tutorial
+	setflag FLAG_0x34C
+	setvar VAR_0x405A, 7
+	@ move plot events up to the museum
+	setflag 144
+	setflag 732
+	setvar 0x405a, 5
+	setflag 2050
+	setflag 188
+	clearflag 142
+	setflag 143
+	setvar 0x4090, 1
+	setflag 894
+	clearflag 807
+	clearflag 983
+	clearflag 739	
+	clearflag 881
+	setvar 0x4096, 1
+	clearflag 814
+	setvar 0x408f, 1
+RoxanneNoAqualess::
+
 	giveitem_std ITEM_TM39
 	compare VAR_RESULT, 0
 	goto_eq RustboroCity_Gym_EventScript_272054

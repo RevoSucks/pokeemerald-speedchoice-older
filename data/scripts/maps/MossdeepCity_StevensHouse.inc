@@ -40,6 +40,9 @@ MossdeepCity_StevensHouse_EventScript_2227CA:: @ 82227CA
 	waitmovement 0
 	msgbox MossdeepCity_StevensHouse_Text_222936, 4
 	giveitem_std ITEM_HM08
+	giveitem_std ITEM_EON_TICKET
+	giveitem_std ITEM_AURORA_TICKET
+	giveitem_std ITEM_OLD_SEA_MAP
 	setflag FLAG_0x07B
 	setflag FLAG_0x12E
 	msgbox MossdeepCity_StevensHouse_Text_222A0E, 4
@@ -50,6 +53,60 @@ MossdeepCity_StevensHouse_EventScript_2227CA:: @ 82227CA
 	setflag FLAG_0x314
 	setflag FLAG_0x3AD
 	setvar VAR_0x40C6, 2
+	checkspeedchoice PLOTLESS, SPD_KEEP
+	goto_if TRUE, AfterStevenDive
+	@ seafloor cavern
+	setvar VAR_0x407B, 1
+	setvar VAR_0x405E, 1
+	clearflag FLAG_0x3CD
+	clearflag FLAG_0x33A
+	clearflag FLAG_0x33B
+	clearflag FLAG_0x356
+	clearflag FLAG_0x3E6
+	clearflag FLAG_0x3E5
+	setflag FLAG_0x347
+	setflag FLAG_LEGENDARIES_IN_SOOTOPOLIS
+	clearflag FLAG_0x3B0
+	clearflag FLAG_0x3B1
+	setflag FLAG_SYS_WEATHER_CTRL
+	setflag FLAG_0x081
+	setflag FLAG_0x3C7
+	setvar VAR_0x40C6, 2
+	setvar VAR_0x40A2, 1
+	setflag FLAG_0x33C
+	setflag FLAG_0x33D
+	setflag FLAG_0x33F
+	setflag FLAG_0x35B
+	setflag FLAG_0x3B2
+	@ route 128
+	setvar VAR_0x407B, 2
+	@ cave of origin
+	setflag FLAG_0x137 @ sky pillar
+	setvar VAR_0x405E, 3
+	clearflag FLAG_0x357
+	@ make rayquaza fly
+	setvar VAR_0x405E, 5
+	setvar VAR_0x40CA, 1
+	setvar VAR_0x40D7, 1
+	@ skip rayquaza scene
+	clearflag FLAG_SYS_WEATHER_CTRL
+	setvar VAR_0x40CA, 3
+	clearflag FLAG_LEGENDARIES_IN_SOOTOPOLIS
+	setflag FLAG_0x33B
+	setflag FLAG_0x33A
+	clearflag FLAG_0x358
+	clearflag FLAG_0x394
+	setvar VAR_0x40B9, 2
+	setflag FLAG_0x09E @ post rayquaza scene state
+	setflag FLAG_0x133 @ steven fix
+	clearflag FLAG_0x330 @ make wallace visible so HM07 can be given
+	@ hide all the relevent objects
+	setflag 997 @ Kyogre
+	setflag 998 @ Groudon
+	setflag 944 @ Archie route 128
+	setflag 945 @ Maxie route 128
+	setflag 855 @ Wallace outside Sky Pillar
+AfterStevenDive::
 	releaseall
 	end
 

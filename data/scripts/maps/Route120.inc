@@ -262,6 +262,37 @@ Route120_EventScript_1F572C:: @ 81F572C
 	setmetatile 12, 17, 161, 0
 	setmetatile 13, 17, 161, 0
 	special DrawWholeMapView
+	checkspeedchoice PLOTLESS, SPD_KEEP
+	goto_if TRUE, AfterKekleon
+	setflag 916
+	setflag 917
+	setflag 212
+	clearflag 841
+	clearflag 848
+	clearflag 845
+	clearflag 846
+	setflag 914
+	setvar 0x40b9, 1
+	setvar 0x4074, 1
+	setvar 0x4058, 2
+	setvar 0x40a0, 2
+	setflag 845
+	setflag 848
+	setflag 821
+	setflag 822
+	setflag 112
+	setflag 852
+	setflag 924
+	setflag 943
+	@ skip the space center and let the next plot point be Steven's House.
+	setflag FLAG_0x075
+	setflag FLAG_0x3C7
+	removeobject 4
+	setflag FLAG_0x2E1
+	clearflag FLAG_0x3C7
+	setvar VAR_0x40C6, 1
+	setflag FLAG_0x314
+AfterKekleon::
 	release
 	end
 

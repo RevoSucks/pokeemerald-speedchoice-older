@@ -102,6 +102,14 @@ PetalburgCity_Gym_EventScript_2049A4:: @ 82049A4
 	waitmovement 0
 	msgbox PetalburgCity_Gym_Text_205C40, 4
 	setvar VAR_0x4085, 2
+	checkspeedchoice PLOTLESS, SPD_KEEP
+	goto_if TRUE, EndOfWallyTutorial
+	checkspeedchoice PLOTLESS, SPD_SEMI
+	goto_if TRUE, EndOfWallyTutorial
+	setvar VAR_0x4098, 1
+	setflag 724
+	setflag 725
+EndOfWallyTutorial::
 	releaseall
 	end
 
@@ -414,6 +422,13 @@ PetalburgCity_Gym_EventScript_204E1D:: @ 8204E1D
 PetalburgCity_Gym_EventScript_204E3B:: @ 8204E3B
 	msgbox PetalburgCity_Gym_Text_205FE5, 4
 	trainerbattle 3, TRAINER_NORMAN_1, 0, PetalburgCity_Gym_Text_206107
+	checkspeedchoice PLOTLESS, SPD_KEEP
+	goto_if TRUE, AfterNorman
+	setvar VAR_0x40B3, 2
+	setflag 890
+	clearflag 892
+	setflag 893
+AfterNorman::
 	message PetalburgCity_Gym_Text_206162
 	waitmessage
 	call PetalburgCity_Gym_EventScript_27207E

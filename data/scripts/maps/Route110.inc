@@ -449,7 +449,10 @@ Route110_EventScript_1EF83A:: @ 81EF83A
 
 Route110_EventScript_1EF84A:: @ 81EF84A
 	msgbox Route110_Text_1EFCF1, 4
-	call Route110_EventScript_1EF8DF
+	checkspeedchoice EARLYFLY, SPD_YES
+	call_if TRUE, Speedchoice_GiveFly
+	checkspeedchoice EARLYFLY, SPD_NO
+	call_if TRUE, Route110_EventScript_1EF8DF @ im sure there's a better way to do this than a double check. i cannot be sure that the callif instructions don't modify callif conditional.
 	msgbox Route110_Text_1EFD58, 4
 	goto Route110_EventScript_1EF8EC
 	end

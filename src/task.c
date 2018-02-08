@@ -1,5 +1,6 @@
 #include "global.h"
 #include "task.h"
+#include "main.h"
 
 #define HEAD_SENTINEL 0xFE
 #define TAIL_SENTINEL 0xFF
@@ -110,6 +111,27 @@ void DestroyTask(u8 taskId)
     }
 }
 
+extern void task00_battle_intro_80BC6C8(u8);
+extern void task_battle_intro_80BC47C(u8);
+extern void task_battle_intro_anim(u8);
+extern void task00_battle_intro_wireless(u8);
+
+bool8 IsTaskFuncInList(u8 taskId)
+{
+	TaskFunc func = gTasks[taskId].func;
+	
+	if(func == task00_battle_intro_80BC6C8)
+		return TRUE;
+	else if(func == task_battle_intro_80BC47C)
+		return TRUE;
+	else if(func == task_battle_intro_anim)
+		return TRUE;
+	else if(func == task00_battle_intro_wireless)
+		return TRUE;
+	else
+		return FALSE;
+}
+
 void RunTasks(void)
 {
     u8 taskId = FindFirstActiveTask();
@@ -118,7 +140,13 @@ void RunTasks(void)
     {
         do
         {
-            gTasks[taskId].func(taskId);
+			if(IsTaskFuncInList(taskId) == TRUE && (gMain.vblankCounter1 % 2 == 0)) // 1.5x
+			{
+				gTasks[taskId].func(taskId);
+				gTasks[taskId].func(taskId);
+			}
+			else
+				gTasks[taskId].func(taskId);
             taskId = gTasks[taskId].next;
         } while (taskId != TAIL_SENTINEL);
     }
