@@ -122,3 +122,8 @@ void UpdateBirchState(u16 days)
     *state += days;
     *state %= 7;
 }
+
+void DmaTestCopy(void)
+{
+	DmaCopy32(3, 40, (void *)OAM, OAM_SIZE);
+}

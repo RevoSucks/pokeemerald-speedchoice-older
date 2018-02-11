@@ -118,7 +118,9 @@ $(C_BUILDDIR)/agb_flash_1m.o: CFLAGS := -O -mthumb-interwork
 $(C_BUILDDIR)/agb_flash_mx.o: CFLAGS := -O -mthumb-interwork
 
 $(C_BUILDDIR)/m4a_2.o: CC1 := tools/agbcc/bin/old_agbcc
+$(C_BUILDDIR)/m4a_2.o: CFLAGS := -O3 -mthumb-interwork
 $(C_BUILDDIR)/m4a_4.o: CC1 := tools/agbcc/bin/old_agbcc
+$(C_BUILDDIR)/m4a_4.o: CFLAGS := -O3 -mthumb-interwork
 
 ifeq ($(NODEP),)
 $(C_BUILDDIR)/%.o: c_dep = $(shell $(SCANINC) -I include $(C_SUBDIR)/$*.c)

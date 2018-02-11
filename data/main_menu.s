@@ -91,8 +91,8 @@ gUnknown_082FF114:: @ 82FF114
 
 	.align 2
 gUnknown_082FF118:: @ 82FF118
-	.4byte gText_BirchBoy, 0x00000000
 	.4byte gText_BirchGirl, 0x00000000
+	.4byte gText_BirchBoy, 0x00000000
 
 	.align 2
 gMalePresetNames:: @ 82FF128

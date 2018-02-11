@@ -290,11 +290,10 @@ void TryRestoringSpinnerTimerBackup(struct Sprite *sprite)
         {
             // dont adjust the player's timer for safety.
             if(gPlayerAvatar.mapObjectId != gSprites[i].data[0])
-            {
                 gSprites[i].data[3] = gMapObjectTimerBackup[i].timer;
-                gMapObjectTimerBackup[i].timer = 0;
-                gMapObjectTimerBackup[i].backedUp = FALSE;
-            }
+
+			gMapObjectTimerBackup[i].timer = 0;
+			gMapObjectTimerBackup[i].backedUp = FALSE; // since the player's info is also backed up, dont forget to unassumingly clear the backup status.
         }
     }
 }

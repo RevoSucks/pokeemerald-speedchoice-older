@@ -40,9 +40,14 @@ MossdeepCity_StevensHouse_EventScript_2227CA:: @ 82227CA
 	waitmovement 0
 	msgbox MossdeepCity_StevensHouse_Text_222936, 4
 	giveitem_std ITEM_HM08
+	setflag FLAG_SYS_HAS_EON_TICKET
 	giveitem_std ITEM_EON_TICKET
+	setflag FLAG_0x8D5
 	giveitem_std ITEM_AURORA_TICKET
+	setflag FLAG_0x8D6
 	giveitem_std ITEM_OLD_SEA_MAP
+	setflag FLAG_0x8E0
+	giveitem_std ITEM_MYSTIC_TICKET
 	setflag FLAG_0x07B
 	setflag FLAG_0x12E
 	msgbox MossdeepCity_StevensHouse_Text_222A0E, 4
@@ -106,6 +111,9 @@ MossdeepCity_StevensHouse_EventScript_2227CA:: @ 82227CA
 	setflag 944 @ Archie route 128
 	setflag 945 @ Maxie route 128
 	setflag 855 @ Wallace outside Sky Pillar
+	@ attempted fix for inability to catch Rayquaza
+	clearflag FLAG_0x050
+	setflag FLAG_0x305
 AfterStevenDive::
 	releaseall
 	end

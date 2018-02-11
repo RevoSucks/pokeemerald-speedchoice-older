@@ -2381,11 +2381,12 @@ void oac_poke_opponent(struct Sprite *sprite)
     BeginNormalPaletteFade(0x20000, 0, 10, 10, 0x2108);
 }
 
+// Pokemon Slide
 static void sub_803980C(struct Sprite *sprite)
 {
     if ((gUnknown_020243FC & 1) == 0)
     {
-        sprite->pos2.x += 2;
+        sprite->pos2.x += 3; // Wtf? Why is it hardcoded and doesnt use the trainer/opponent slide callback since its functionally the same
         if (sprite->pos2.x == 0)
         {
             sprite->callback = sub_8039838;

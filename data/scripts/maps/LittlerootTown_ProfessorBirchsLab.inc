@@ -575,6 +575,8 @@ LittlerootTown_ProfessorBirchsLab_EventScript_1FA3AC:: @ 81FA3AC
 	special sub_81AFDA0
 	setflag FLAG_0x8E4
 	setvar VAR_0x40CD, 1
+	setflag FLAG_SYS_NATIONAL_DEX
+	special EnableNationalPokedex
 	return
 
 LittlerootTown_ProfessorBirchsLab_EventScript_1FA3C4:: @ 81FA3C4

@@ -2498,7 +2498,7 @@ task_new_game_prof_birch_speech_9: @ 8030CD4
 	b _08030D7A
 	.pool
 _08030D34:
-	ldrb r3, [r4, 0x1C]
+	ldrb r3, [r4, 0x1E] @ MAY INSTEAD OF BRENDAN
 	lsls r1, r3, 4
 	adds r1, r3
 	lsls r1, 2
@@ -2630,10 +2630,10 @@ task_new_game_prof_birch_speech_13: @ 8030E38
 	bl sub_8031DB4
 	lsls r0, 24
 	asrs r4, r0, 24
-	cmp r4, 0
+	cmp r4, 0x0
 	beq _08030E52
 	cmp r4, 0x1
-	beq _08030E52
+	beq _08030E52_2
 	lsls r4, r5, 2
 	b _08030E76
 _08030E52:
@@ -2641,7 +2641,27 @@ _08030E52:
 	bl PlaySE
 	ldr r0, =gSaveBlock2Ptr
 	ldr r0, [r0]
-	strb r4, [r0, 0x8]
+	movs r1, 0x1 @ HACK!!!
+	strb r1, [r0, 0x8]
+	movs r0, 0x1
+	movs r1, 0x1
+	bl sub_80322E0
+	ldr r1, =gTasks
+	lsls r2, r5, 2
+	adds r0, r2, r5
+	lsls r0, 3
+	adds r0, r1
+	ldr r1, =task_new_game_prof_birch_speech_14
+	str r1, [r0]
+	adds r4, r2, 0
+	bl _08030E76
+_08030E52_2:
+	movs r0, 0x5
+	bl PlaySE
+	ldr r0, =gSaveBlock2Ptr
+	ldr r0, [r0]
+	movs r1, 0x0 @ HACK!!!
+	strb r1, [r0, 0x8]
 	movs r0, 0x1
 	movs r1, 0x1
 	bl sub_80322E0
@@ -2733,11 +2753,11 @@ _08030F0C:
 	ldrsh r0, [r4, r1]
 	cmp r0, 0
 	beq _08030F30
-	ldrb r5, [r4, 0x1E]
+	ldrb r5, [r4, 0x1C] @ Fix May/Brendan slides
 	b _08030F32
 	.pool
 _08030F30:
-	ldrb r5, [r4, 0x1C]
+	ldrb r5, [r4, 0x1E]
 _08030F32:
 	lsls r2, r5, 4
 	adds r2, r5

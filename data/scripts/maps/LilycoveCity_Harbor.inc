@@ -9,8 +9,8 @@ LilycoveCity_Harbor_MapScript1_21E006: @ 821E006
 LilycoveCity_Harbor_EventScript_21E00F:: @ 821E00F
 	lock
 	faceplayer
-	checkflag FLAG_SYS_GAME_CLEAR
-	goto_if 0, LilycoveCity_Harbor_EventScript_21E54D
+	@checkflag FLAG_SYS_GAME_CLEAR
+	@goto_if 0, LilycoveCity_Harbor_EventScript_21E54D
 	call LilycoveCity_Harbor_EventScript_21E194
 	call LilycoveCity_Harbor_EventScript_21E1C6
 	call LilycoveCity_Harbor_EventScript_21E1F8

@@ -26,7 +26,7 @@ RomHeaderGameTitle:
 
 	.global RomHeaderGameCode
 RomHeaderGameCode:
-	.ascii "BPEE"
+	.ascii "SPDC"
 
 RomHeaderMakerCode:
 	.ascii "01"
@@ -38,7 +38,7 @@ RomHeaderMainUnitCode:
 	.byte 0
 
 RomHeaderDeviceType:
-	.byte 0
+	.byte 0x80 @ WHYYYYYYYYYYYYYYYY is this still needed for Emerald
 
 RomHeaderReserved1:
 	.rept 7
@@ -49,8 +49,8 @@ RomHeaderReserved1:
 RomHeaderSoftwareVersion:
 	.byte 0
 
-RomHeaderChecksum:
-	.byte 0x72
+RomHeaderChecksum::
+	.byte 0xE4
 
 RomHeaderReserved2:
 	.rept 2

@@ -82,7 +82,7 @@ const u8 gSystemText_TerminatorS[] = _("{COLOR RED}$");
 
 // HEADER
 const u8 gSpeedchoiceTextHeader[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SPEEDCHOICE MENU");
-const u8 gSpeedchoiceCurrentVersion[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}v1.00");
+const u8 gSpeedchoiceCurrentVersion[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}v1.04");
 
 // OPTION CHOICES
 const u8 gSpeedchoiceTextYes[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}YES");
@@ -126,13 +126,16 @@ const u8 gSpeedchoiceOptionStartGame[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}STA
 const u8 gSpeedchoiceOptionLeftArrow[] = _("{COLOR RED}{SHADOW LIGHT_RED}{LEFT_ARROW}");
 const u8 gSpeedchoiceOptionRightArrow[] = _("{COLOR RED}{SHADOW LIGHT_RED}{RIGHT_ARROW}");
 
+// INTRODUCTION
+const u8 gSpeedchoiceTooltipExplanation[] = _("This is the Speedchoice menu where\nvarious options can be selected.\pTo get an explanation of each option,\npress SELECT when over the option.");
+
 // TOOLTIPS
 const u8 gSpeedchoiceTooltipBWEXP[] = _("Replaces the current experience\nsystem in favor of\pBlack/White’s implementation.");
-const u8 gSpeedchoiceTooltipPlotless[] = _("SEMI: Stops villian team events\nafter Mt. Chimney.\pFULL: Skips all the villian team\nevents. Also allows Dive to be used\pwithout Gym 7’s badge.");
+const u8 gSpeedchoiceTooltipPlotless[] = _("SEMI: Stops villain team events\nafter Mt. Chimney.\pFULL: Skips all the villain team\nevents. Also allows Dive to be used\pwithout Gym 7’s badge.");
 const u8 gSpeedchoiceTooltipInstantText[] = _("Self-explanatory.\nHold A or B to mash.");
 const u8 gSpeedchoiceTooltipSpinners[] = _("PURGE: Makes spinners on a static\nspinning pattern at a fixed rate.\pHELL: Rapidly spins\nevery spinner every frame.\pAlso fixes bag manip.");
 const u8 gSpeedchoiceTooltipMaxVision[] = _("SANE: Will extend trainer vision\nto 8, but prevent trainers from\pwalking through walls or solid\nobjects.\pHELL: No collision or\nelevation detection.");
-const u8 gSpeedchoiceTooltipNerfRoxanne[] = _("Nerfs Gym Leader Roxanne.\nReduces her levels by 2 and\premoves one of her Potions.");
+const u8 gSpeedchoiceTooltipNerfRoxanne[] = _("Nerfs Gym Leader Roxanne.\nRemoves both of her Potions.");
 const u8 gSpeedchoiceTooltipSuperBike[] = _("While riding the bicycle, you\ncan switch between bikes with\pthe R button while you are\nstanding still.");
 const u8 gSpeedchoiceTooltipNewWildEnc[] = _("Intended to be used with\nthe randomizer.\pTreats grass and fishing slots\nas 6 and 2 slots respectively.");
 const u8 gSpeedchoiceTooltipEarlyFly[] = _("Recieve HM02 instead of\nItemfinder at Rival 2.\pAllows use of Fly without use of\nGym 6’s badge.");
@@ -666,6 +669,9 @@ static void DrawGeneralChoices(struct SpeedchoiceOption *option, u8 selection, u
 }
 
 static void Task_SpeedchoiceMenuProcessInput(u8);
+static void DrawTooltip(u8 taskId, const u8 *str, int speed, bool32 isYesNo);
+
+EWRAM_DATA bool32 gFirstLoad = FALSE;
 
 // WIP
 static void Task_SpeedchoiceMenuFadeIn(u8 taskId)
@@ -878,7 +884,12 @@ static void Task_SpeedchoiceMenuSave(u8 taskId)
 
 static void Task_SpeedchoiceMenuProcessInput(u8 taskId)
 {
-    if (gMain.newKeys & A_BUTTON)
+	if(!gFirstLoad)
+	{
+		DrawTooltip(taskId, gSpeedchoiceTooltipExplanation, GetPlayerTextSpeed(), FALSE);
+		gFirstLoad = TRUE;
+	}
+    else if (gMain.newKeys & A_BUTTON)
     {
         if (gLocalSpeedchoiceConfig.trueIndex == START_GAME)
             gTasks[taskId].func = Task_SpeedchoiceMenuSave;
